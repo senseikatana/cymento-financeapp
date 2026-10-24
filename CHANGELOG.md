@@ -7,6 +7,175 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.1] - 2026-10-24
+
+Highlights: fix: update .gitignore to include new file patterns and remove outdated one.
+
+- [x] 🐛 fix: update .gitignore to include new file patterns and remove outdated one
+  - `.gitignore`
+  - `.vscode/settings.json`
+  - `AGENTS.md`
+  - `app/app.vue`
+  - `app/assets/css/main.css`
+  - `app/components/DateFilter.vue`
+  - `app/components/ThemeToggle.vue`
+  - `app/components/Toaster.vue`
+  - `app/components/finance/DashboardCharts.vue`
+  - `app/components/finance/ExpenseFormDialog.vue`
+  - `app/components/finance/ExpensesTable.vue`
+  - `app/components/finance/IncomeFormDialog.vue`
+  - `app/components/finance/IncomesTable.vue`
+  - `app/components/finance/KpiCard.vue`
+  - `app/components/finance/RuleBreakdownCard.vue`
+  - `app/components/finance/SettingsDialog.vue`
+  - `app/components/finance/SubscriptionFormDialog.vue`
+  - `app/components/finance/SubscriptionsTable.vue`
+  - `app/components/finance/SyncToolbar.vue`
+  - `app/components/ui/Badge.vue`
+  - `app/components/ui/Button.vue`
+  - `app/components/ui/Card.vue`
+  - `app/components/ui/CardContent.vue`
+  - `app/components/ui/CardDescription.vue`
+  - `app/components/ui/CardFooter.vue`
+  - `app/components/ui/CardHeader.vue`
+  - `app/components/ui/CardTitle.vue`
+  - `app/components/ui/Checkbox.vue`
+  - `app/components/ui/Input.vue`
+  - `app/components/ui/Label.vue`
+  - `app/components/ui/Progress.vue`
+  - `app/components/ui/Select.vue`
+  - `app/components/ui/Switch.vue`
+  - `app/components/ui/Table.vue`
+  - `app/components/ui/TableBody.vue`
+  - `app/components/ui/TableCell.vue`
+  - `app/components/ui/TableHead.vue`
+  - `app/components/ui/TableHeader.vue`
+  - `app/components/ui/TableRow.vue`
+  - `app/components/ui/Tabs.vue`
+  - `app/components/ui/TabsContent.vue`
+  - `app/components/ui/TabsList.vue`
+  - `app/components/ui/TabsTrigger.vue`
+  - `app/components/ui/Textarea.vue`
+  - `app/composables/useFinances.ts`
+  - `app/composables/useTabs.ts`
+  - `app/composables/useTheme.ts`
+  - `app/composables/useToast.ts`
+  - `app/pages/index.vue`
+  - `app/utils/cn.ts`
+  - `app/utils/format.ts`
+  - `bun.lock`
+  - `components.json`
+  - `db/custom.db`
+  - `download/workspace-416183b5-86a8-4e58-a5d0-4882fee31269.tar`
+  - `eslint.config.mjs`
+  - `examples/websocket/frontend.tsx`
+  - `examples/websocket/server.ts`
+  - `mini-services/.gitkeep`
+  - `next.config.ts`
+  - `nuxt.config.ts`
+  - `package.json`
+  - `postcss.config.mjs`
+  - `prisma/schema.prisma`
+  - `server/api/expenses/[id].ts`
+  - `server/api/expenses/index.ts`
+  - `server/api/expenses/monthly.ts`
+  - `server/api/expenses/real.ts`
+  - `server/api/incomes/[id].ts`
+  - `server/api/incomes/index.ts`
+  - `server/api/index.ts`
+  - `server/api/seed.ts`
+  - `server/api/settings.ts`
+  - `server/api/subscriptions/[id].ts`
+  - `server/api/subscriptions/index.ts`
+  - `server/api/summary.ts`
+  - `server/api/sync.ts`
+  - `server/utils/db.ts`
+  - `src/app/api/expenses/[id]/route.ts`
+  - `src/app/api/expenses/route.ts`
+  - `src/app/api/incomes/[id]/route.ts`
+  - `src/app/api/incomes/route.ts`
+  - `src/app/api/route.ts`
+  - `src/app/api/seed/route.ts`
+  - `src/app/api/settings/route.ts`
+  - `src/app/api/subscriptions/[id]/route.ts`
+  - `src/app/api/subscriptions/route.ts`
+  - `src/app/api/summary/route.ts`
+  - `src/app/api/sync/route.ts`
+  - `src/app/globals.css`
+  - `src/app/layout.tsx`
+  - `src/app/page.tsx`
+  - `src/components/finance/dashboard-charts.tsx`
+  - `src/components/finance/data-tables.tsx`
+  - `src/components/finance/expense-form-dialog.tsx`
+  - `src/components/finance/income-form-dialog.tsx`
+  - `src/components/finance/kpi-card.tsx`
+  - `src/components/finance/rule-breakdown-card.tsx`
+  - `src/components/finance/settings-dialog.tsx`
+  - `src/components/finance/subscription-form-dialog.tsx`
+  - `src/components/finance/sync-toolbar.tsx`
+  - `src/components/providers.tsx`
+  - `src/components/theme-provider.tsx`
+  - `src/components/theme-toggle.tsx`
+  - `src/components/ui/accordion.tsx`
+  - `src/components/ui/alert-dialog.tsx`
+  - `src/components/ui/alert.tsx`
+  - `src/components/ui/aspect-ratio.tsx`
+  - `src/components/ui/avatar.tsx`
+  - `src/components/ui/badge.tsx`
+  - `src/components/ui/breadcrumb.tsx`
+  - `src/components/ui/button.tsx`
+  - `src/components/ui/calendar.tsx`
+  - `src/components/ui/card.tsx`
+  - `src/components/ui/carousel.tsx`
+  - `src/components/ui/chart.tsx`
+  - `src/components/ui/checkbox.tsx`
+  - `src/components/ui/collapsible.tsx`
+  - `src/components/ui/command.tsx`
+  - `src/components/ui/context-menu.tsx`
+  - `src/components/ui/dialog.tsx`
+  - `src/components/ui/drawer.tsx`
+  - `src/components/ui/dropdown-menu.tsx`
+  - `src/components/ui/form.tsx`
+  - `src/components/ui/hover-card.tsx`
+  - `src/components/ui/input-otp.tsx`
+  - `src/components/ui/input.tsx`
+  - `src/components/ui/label.tsx`
+  - `src/components/ui/menubar.tsx`
+  - `src/components/ui/navigation-menu.tsx`
+  - `src/components/ui/pagination.tsx`
+  - `src/components/ui/popover.tsx`
+  - `src/components/ui/progress.tsx`
+  - `src/components/ui/radio-group.tsx`
+  - `src/components/ui/resizable.tsx`
+  - `src/components/ui/scroll-area.tsx`
+  - `src/components/ui/select.tsx`
+  - `src/components/ui/separator.tsx`
+  - `src/components/ui/sheet.tsx`
+  - `src/components/ui/sidebar.tsx`
+  - `src/components/ui/skeleton.tsx`
+  - `src/components/ui/slider.tsx`
+  - `src/components/ui/sonner.tsx`
+  - `src/components/ui/switch.tsx`
+  - `src/components/ui/table.tsx`
+  - `src/components/ui/tabs.tsx`
+  - `src/components/ui/textarea.tsx`
+  - `src/components/ui/toast.tsx`
+  - `src/components/ui/toaster.tsx`
+  - `src/components/ui/toggle-group.tsx`
+  - `src/components/ui/toggle.tsx`
+  - `src/components/ui/tooltip.tsx`
+  - `src/hooks/use-mobile.ts`
+  - `src/hooks/use-toast.ts`
+  - `src/lib/db.ts`
+  - `src/lib/finance/format.ts`
+  - `src/lib/finance/hooks.ts`
+  - `src/lib/utils.ts`
+  - `tailwind.config.ts`
+  - `tsconfig.json`
+- [x] 🐛 fix: update files and directories according to the new .gitignore rules
+- [x] 📝 docs(AGENTS.md): update 🏗️ Arquitectura Propuesta: Nuxt + Supabase, 📊 Esquema de Base de Datos and 🔄 Sincronización con Google Sheets y Excel sections
+- [x] 🔹 ]7;file://localhost/home/senseikatana/Proyectos/cymento-financeappbun add v1.4.3 (c6da4a4d3) [nuxt:tailwindcss] ℹ Using default Tailwind CSS file ◆ Types generated in .nuxt.
+
 ## [0.3.0] - 2026-10-24
 
 Highlights: fix: update files and directories according to the new .gitignore rules, plus 2 more changes.
@@ -149,4 +318,3 @@ Highlights: fix: update files and directories according to the new .gitignore ru
   - `public/robots.txt`
   - `tsconfig.json`
   - `utils/cn.ts`
-
