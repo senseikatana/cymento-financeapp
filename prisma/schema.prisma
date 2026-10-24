@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Tipos enumerados para clasificar transacciones
+// Se almacenan como String en SQLite pero el cliente los tipa
+
+model Income {
+  id          String   @id @default(cuid())
+  // tipo: salario | subsidio_paro | ahorros_previos | otro
+  type        String   @default("salario")
+  source      String                    // descripción corta, ej "Nómina octubre"
+  amount      Float                     // importe neto en €
+  // frecuencia: unico | mensual | anual
+  frequency   String   @default("unico")
+  date        DateTime @default(now())  // fecha del ingreso
+  active      Boolean  @default(true)   // si sigue vigente (para recurrentes)
+  notes       String?
+  category    String?                   // categoría libre
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  // bucket: fijo | extraordinario | ahorro
+  bucket      String   @default("fijo")
+  category    String                    // categoría: vivienda, comida, transporte, ocio, suscripcion, etc.
+  description String
+  amount      Float                     // importe en €
+  // frecuencia: unico | mensual | anual
+  frequency   String   @default("unico")
+  date        DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relación opcional con Subscription
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+}
+
+model Subscription {
+  id              String   @id @default(cuid())
+  name            String                       // ej. "Netflix", "Spotify"
+  provider        String?
+  // plan: mensual | anual | trimestral | semestral
+  billingCycle    String   @default("mensual")
+  amount          Float                        // importe en € según billingCycle
+  startDate       DateTime @default(now())
+  renewalDate     DateTime?                    // próxima renovación
+  active          Boolean  @default(true)
+  // bucket destino para el gasto asociado (por defecto "extraordinario" / ocio)
+  bucket          String   @default("extraordinario")
+  category        String   @default("suscripcion")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  expenses        Expense[]
+}
+
+model Settings {
+  id            String   @id @default("singleton")
+  // Porcentajes de la regla 50/30/20
+  pctFixed      Float    @default(50)
+  pctExtra      Float    @default(30)
+  pctSavings    Float    @default(20)
+  // aplica la regla a: total | salario | custom
+  ruleBase      String   @default("total")
+  currency      String   @default("EUR")
+  locale        String   @default("es-ES")
+  updatedAt     DateTime @updatedAt
+}

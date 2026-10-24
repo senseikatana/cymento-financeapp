@@ -1,75 +1,40 @@
-# Nuxt Minimal Starter
+# Finanzas Personales — Regla 50/30/20
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Gestión de finanzas personales con dashboard, suscripciones y sincronización Excel. Pensado para SMI 2026 (1.221€ brutos en 14 pagas) y meta de colchón sept-2027.
+
+## Stack
+
+- Next.js 16 (App Router)
+- Prisma + SQLite local
+- shadcn/ui + TailwindCSS v4
+- React Query, Recharts, xlsx
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
+# Instala dependencias
 bun install
-```
 
-## Development Server
+# Genera el cliente de Prisma y sincroniza el esquema
+bun run db:generate
+bun run db:push
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
+# Arranca el servidor de desarrollo
 bun run dev
 ```
 
-## Production
+Abre [http://localhost:3000](http://localhost:3000).
 
-Build the application for production:
+## Scripts
 
-```bash
-# npm
-npm run build
+| Comando | Descripción |
+|---------|-------------|
+| `bun run dev` | Servidor de desarrollo |
+| `bun run build` | Build de producción |
+| `bun run start` | Arranca el build standalone |
+| `bun run db:push` | Sincroniza el esquema Prisma |
+| `bun run db:generate` | Genera el cliente Prisma |
 
-# pnpm
-pnpm build
+## Datos
 
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Los datos se almacenan en SQLite local (`db/custom.db`). La app permite exportar/importar a Excel (.xlsx) para abrirlo en OnlyOffice/LibreOffice o subirlo a Google Drive.
