@@ -8,8 +8,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "format": "prettier --write .",
-    "lint": "eslint .",
-    "prepare": "husky",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.mjs,.cjs,.vue .",
+    "prepare": "husky install .husky",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev"
