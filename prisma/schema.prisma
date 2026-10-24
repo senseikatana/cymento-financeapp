@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -79,4 +79,12 @@ model Settings {
   currency      String   @default("EUR")
   locale        String   @default("es-ES")
   updatedAt     DateTime @updatedAt
+}
+
+model AuthUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
