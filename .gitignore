@@ -5,6 +5,7 @@
 .nitro
 .cache
 .zscripts
+.zcode
 dist
 
 # Node dependencies
@@ -51,3 +52,7 @@ next-env.d.ts
 .roo
 .trae
 .windsurf
+
+# Base SQLite local (legacy Prisma)
+db/*.db
+db/*.db-journal

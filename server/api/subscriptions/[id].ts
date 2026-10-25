@@ -1,23 +1,28 @@
 // GET /api/subscriptions/:id · PUT /api/subscriptions/:id · DELETE /api/subscriptions/:id
+import { getInsforge } from '../../utils/insforge';
+import { mapSubscription, toDateOnly } from '../../utils/mappers';
+
 export default defineEventHandler(async (event) => {
   try {
-    const id = getRouterParam(event, "id");
+    const id = getRouterParam(event, 'id');
     if (!id) {
-      throw createError({ statusCode: 400, statusMessage: "Falta id" });
+      throw createError({ statusCode: 400, statusMessage: 'Falta id' });
     }
 
-    if (event.method === "GET") {
-      const item = await db.subscription.findUnique({
-        where: { id },
-        include: { expenses: true },
-      });
-      if (!item) {
-        throw createError({ statusCode: 404, statusMessage: "No encontrado" });
+    if (event.method === 'GET') {
+      const { data, error } = await getInsforge()
+        .database.from('subscriptions')
+        .select('*, expenses(*)')
+        .eq('id', id)
+        .limit(1);
+      if (error) throw createError({ statusCode: 500, statusMessage: error.message });
+      if (!data?.length) {
+        throw createError({ statusCode: 404, statusMessage: 'No encontrado' });
       }
-      return { item };
+      return { item: mapSubscription(data[0]) };
     }
 
-    if (event.method === "PUT") {
+    if (event.method === 'PUT') {
       const body = await readBody(event);
       const {
         name,
@@ -32,43 +37,45 @@ export default defineEventHandler(async (event) => {
         notes,
       } = body || {};
 
-      const item = await db.subscription.update({
-        where: { id },
-        data: {
+      const { data, error } = await getInsforge()
+        .database.from('subscriptions')
+        .update({
           ...(name !== undefined && { name: String(name) }),
           ...(provider !== undefined && { provider: provider || null }),
-          ...(billingCycle !== undefined && { billingCycle }),
+          ...(billingCycle !== undefined && { billing_cycle: billingCycle }),
           ...(amount !== undefined && { amount: Number(amount) }),
-          ...(startDate !== undefined && { startDate: new Date(startDate) }),
+          ...(startDate !== undefined && { start_date: toDateOnly(startDate) }),
           ...(renewalDate !== undefined && {
-            renewalDate: renewalDate ? new Date(renewalDate) : null,
+            renewal_date: toDateOnly(renewalDate),
           }),
           ...(active !== undefined && { active: Boolean(active) }),
           ...(bucket !== undefined && { bucket }),
           ...(category !== undefined && { category }),
           ...(notes !== undefined && { notes: notes || null }),
-        },
-        include: { expenses: true },
-      });
-      return { item };
+        })
+        .eq('id', id)
+        .select('*, expenses(*)');
+
+      if (error) throw createError({ statusCode: 400, statusMessage: error.message });
+      if (!data?.length) {
+        throw createError({ statusCode: 404, statusMessage: 'No encontrado' });
+      }
+      return { item: mapSubscription(data[0]) };
     }
 
-    if (event.method === "DELETE") {
-      // Antes de borrar, desvincular gastos asociados
-      await db.expense.updateMany({
-        where: { subscriptionId: id },
-        data: { subscriptionId: null },
-      });
-      await db.subscription.delete({ where: { id } });
+    if (event.method === 'DELETE') {
+      // La FK expenses.subscription_id ya aplica ON DELETE SET NULL
+      const { error } = await getInsforge().database.from('subscriptions').delete().eq('id', id);
+      if (error) throw createError({ statusCode: 400, statusMessage: error.message });
       return { ok: true };
     }
 
-    throw createError({ statusCode: 405, statusMessage: "Method not allowed" });
+    throw createError({ statusCode: 405, statusMessage: 'Method not allowed' });
   } catch (e: any) {
-    console.error("/api/subscriptions/[id]", e);
+    console.error('/api/subscriptions/[id]', e);
     throw createError({
       statusCode: e.statusCode || 500,
-      statusMessage: e.statusMessage || "Error al procesar suscripción",
+      statusMessage: e.statusMessage || 'Error al procesar suscripción',
     });
   }
 });

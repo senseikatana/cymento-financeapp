@@ -89,24 +89,18 @@ export interface Summary {
 }
 
 export function useFinances() {
-  // ---------- State ----------
-  const dateRange = ref<{ start: string; end: string }>({
-    start: getFirstDayOfMonth(new Date()).toISOString().split("T")[0],
-    end: new Date().toISOString().split("T")[0],
-  });
-
   // ---------- Queries ----------
   const {
     data: summary,
     pending: loadingSummary,
     refresh: refreshSummary,
-  } = useFetch<Summary>("/api/summary", { default: () => null });
+  } = useFetch<Summary | null>('/api/summary', { default: () => null });
 
   const {
     data: incomes,
     pending: loadingIncomes,
     refresh: refreshIncomes,
-  } = useFetch<{ items: Income[] }>("/api/incomes", {
+  } = useFetch<{ items: Income[] }>('/api/incomes', {
     default: () => ({ items: [] }),
   });
 
@@ -114,7 +108,7 @@ export function useFinances() {
     data: expenses,
     pending: loadingExpenses,
     refresh: refreshExpenses,
-  } = useFetch<{ items: Expense[] }>("/api/expenses", {
+  } = useFetch<{ items: Expense[] }>('/api/expenses', {
     default: () => ({ items: [] }),
   });
 
@@ -122,7 +116,7 @@ export function useFinances() {
     data: subs,
     pending: loadingSubs,
     refresh: refreshSubs,
-  } = useFetch<{ items: Subscription[] }>("/api/subscriptions", {
+  } = useFetch<{ items: Subscription[] }>('/api/subscriptions', {
     default: () => ({ items: [] }),
   });
 
@@ -130,7 +124,7 @@ export function useFinances() {
     data: settings,
     pending: loadingSettings,
     refresh: refreshSettings,
-  } = useFetch<{ settings: Settings | null }>("/api/settings", {
+  } = useFetch<{ settings: Settings | null }>('/api/settings', {
     default: () => ({ settings: null }),
   });
 
@@ -146,65 +140,61 @@ export function useFinances() {
 
   // ---------- Mutations: Incomes ----------
   async function createIncome(input: Partial<Income>) {
-    await $fetch("/api/incomes", { method: "POST", body: input });
+    await $fetch('/api/incomes', { method: 'POST', body: input });
     await refreshIncomes();
     await refreshSummary();
   }
 
   async function updateIncome(input: Partial<Income> & { id: string }) {
     const { id, ...rest } = input;
-    await $fetch(`/api/incomes/${id}`, { method: "PUT", body: rest });
+    await $fetch(`/api/incomes/${id}`, { method: 'PUT', body: rest });
     await refreshIncomes();
     await refreshSummary();
   }
 
   async function deleteIncome(id: string) {
-    await $fetch(`/api/incomes/${id}`, { method: "DELETE" });
+    await $fetch(`/api/incomes/${id}`, { method: 'DELETE' });
     await refreshIncomes();
     await refreshSummary();
   }
 
   // ---------- Mutations: Expenses ----------
   async function createExpense(input: Partial<Expense>) {
-    await $fetch("/api/expenses", { method: "POST", body: input });
+    await $fetch('/api/expenses', { method: 'POST', body: input });
     await refreshExpenses();
     await refreshSummary();
   }
 
   async function updateExpense(input: Partial<Expense> & { id: string }) {
     const { id, ...rest } = input;
-    await $fetch(`/api/expenses/${id}`, { method: "PUT", body: rest });
+    await $fetch(`/api/expenses/${id}`, { method: 'PUT', body: rest });
     await refreshExpenses();
     await refreshSummary();
   }
 
   async function deleteExpense(id: string) {
-    await $fetch(`/api/expenses/${id}`, { method: "DELETE" });
+    await $fetch(`/api/expenses/${id}`, { method: 'DELETE' });
     await refreshExpenses();
     await refreshSummary();
   }
 
   // ---------- Mutations: Subscriptions ----------
-  async function createSubscription(
-    input: Partial<Subscription> & { createExpense?: boolean },
-  ) {
-    await $fetch("/api/subscriptions", { method: "POST", body: input });
+  async function createSubscription(input: Partial<Subscription> & { createExpense?: boolean }) {
+    await $fetch('/api/subscriptions', { method: 'POST', body: input });
     await refreshSubs();
     await refreshExpenses();
     await refreshSummary();
   }
 
-  async function updateSubscription(
-    input: Partial<Subscription> & { id: string },
-  ) {
+  async function updateSubscription(input: Partial<Subscription> & { id: string }) {
     const { id, ...rest } = input;
-    await $fetch(`/api/subscriptions/${id}`, { method: "PUT", body: rest });
+    await $fetch(`/api/subscriptions/${id}`, { method: 'PUT', body: rest });
     await refreshSubs();
     await refreshSummary();
   }
 
   async function deleteSubscription(id: string) {
-    await $fetch(`/api/subscriptions/${id}`, { method: "DELETE" });
+    await $fetch(`/api/subscriptions/${id}`, { method: 'DELETE' });
     await refreshSubs();
     await refreshExpenses();
     await refreshSummary();
@@ -212,16 +202,16 @@ export function useFinances() {
 
   // ---------- Mutations: Settings ----------
   async function updateSettings(input: Partial<Settings>) {
-    await $fetch("/api/settings", { method: "PUT", body: input });
+    await $fetch('/api/settings', { method: 'PUT', body: input });
     await refreshSettings();
     await refreshSummary();
   }
 
   // ---------- Sync ----------
   async function exportExcel() {
-    const blob = await $fetch<Blob>("/api/sync", { method: "GET" });
+    const blob = await $fetch<Blob>('/api/sync', { method: 'GET' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
     a.download = `finanzas_${new Date().toISOString().slice(0, 10)}.xlsx`;
     document.body.appendChild(a);
@@ -232,17 +222,17 @@ export function useFinances() {
 
   async function importExcel(file: File) {
     const fd = new FormData();
-    fd.append("file", file);
+    fd.append('file', file);
     const result = await $fetch<{
       ok: boolean;
       imported: { incomes: number; expenses: number; subscriptions: number };
-    }>("/api/sync", { method: "POST", body: fd });
+    }>('/api/sync', { method: 'POST', body: fd });
     await refreshAll();
     return result;
   }
 
   async function seed() {
-    await $fetch("/api/seed", { method: "POST" });
+    await $fetch('/api/seed', { method: 'POST' });
     await refreshAll();
   }
 
@@ -259,44 +249,6 @@ export function useFinances() {
     loadingSubs,
     loadingSettings,
     refreshAll,
-    dateRange,
-    // Calculated Expenses
-    monthlyExpenses: async () => {
-      const response = await $fetch<{
-        monthlyExpenses: number;
-        yearlyExpenses: number;
-      }>("/api/expenses/monthly", {
-        method: "GET",
-        headers: {
-          "X-Date-Range": `${dateRange.value.start},${dateRange.value.end}`,
-        },
-      });
-      return response.monthlyExpenses;
-    },
-    yearlyExpenses: async () => {
-      const response = await $fetch<{
-        monthlyExpenses: number;
-        yearlyExpenses: number;
-      }>("/api/expenses/monthly", {
-        method: "GET",
-        headers: {
-          "X-Date-Range": `${dateRange.value.start},${dateRange.value.end}`,
-        },
-      });
-      return response.yearlyExpenses;
-    },
-    realExpenses: async () => {
-      const response = await $fetch<{ realExpenses: number }>(
-        "/api/expenses/real",
-        {
-          method: "GET",
-        },
-      );
-      return response.realExpenses;
-    },
-    // Helper functions
-    calculateMonthlyExpenses: calculateMonthlyExpenses,
-    calculateRealExpenses: calculateRealExpenses,
     // Mutations
     createIncome,
     updateIncome,

@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Pencil, Trash2, Plus } from "@lucide/vue";
-import { useFinances, type Expense } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
-import {
-  formatEUR,
-  formatDate,
-  FREQUENCY_LABELS,
-  BUCKET_SHORT,
-  toMonthly,
-} from "~/utils/format";
+import type { Expense } from '@/composables/useFinances';
+import { Pencil, Plus, Trash2 } from '@lucide/vue';
+import { ref } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
+import { BUCKET_SHORT, formatDate, formatEUR, FREQUENCY_LABELS, toMonthly } from '@/utils/format';
 
 const props = defineProps<{
   items: Expense[];
@@ -18,8 +13,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", item: Expense): void;
-  (e: "add"): void;
+  (e: 'edit', item: Expense): void;
+  (e: 'add'): void;
 }>();
 
 const { deleteExpense } = useFinances();
@@ -31,9 +26,9 @@ async function confirm() {
   if (!toDelete.value) return;
   try {
     await deleteExpense(toDelete.value.id);
-    toast.success("Gasto eliminado");
+    toast.success('Gasto eliminado');
   } catch (e: any) {
-    toast.error(e?.data?.statusMessage || e?.message || "Error al eliminar");
+    toast.error(e?.data?.statusMessage || e?.message || 'Error al eliminar');
   } finally {
     toDelete.value = null;
   }
@@ -54,24 +49,16 @@ async function confirm() {
           <table class="w-full caption-bottom text-sm">
             <thead class="[&_tr]:border-b">
               <tr class="sticky top-0 bg-muted/50 backdrop-blur z-10 border-b">
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Descripción
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Bucket
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Categoría
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Frec.
                 </th>
                 <th
@@ -84,9 +71,7 @@ async function confirm() {
                 >
                   Importe
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Fecha
                 </th>
                 <th
@@ -100,17 +85,13 @@ async function confirm() {
               <tr v-for="row in items" :key="row.id" class="border-b">
                 <td class="p-2 align-middle">
                   <div class="min-w-0">
-                    <p class="font-medium truncate">{{ row.description }}</p>
-                    <p
-                      v-if="row.notes"
-                      class="text-xs text-muted-foreground truncate"
-                    >
+                    <p class="font-medium truncate">
+                      {{ row.description }}
+                    </p>
+                    <p v-if="row.notes" class="text-xs text-muted-foreground truncate">
                       {{ row.notes }}
                     </p>
-                    <p
-                      v-if="row.subscription"
-                      class="text-xs text-violet-600 dark:text-violet-400"
-                    >
+                    <p v-if="row.subscription" class="text-xs text-violet-600 dark:text-violet-400">
                       ↳ suscripción: {{ row.subscription.name }}
                     </p>
                   </div>
@@ -133,15 +114,11 @@ async function confirm() {
                 <td class="p-2 align-middle text-right tabular-nums">
                   {{ formatEUR(toMonthly(row.amount, row.frequency)) }}
                 </td>
-                <td
-                  class="p-2 align-middle text-right font-medium tabular-nums"
-                >
+                <td class="p-2 align-middle text-right font-medium tabular-nums">
                   {{ formatEUR(row.amount) }}
                 </td>
                 <td class="p-2 align-middle">
-                  <span class="text-xs text-muted-foreground">{{
-                    formatDate(row.date)
-                  }}</span>
+                  <span class="text-xs text-muted-foreground">{{ formatDate(row.date) }}</span>
                 </td>
                 <td class="p-2 align-middle text-right">
                   <div class="flex justify-end gap-1">
@@ -149,9 +126,7 @@ async function confirm() {
                       type="button"
                       class="inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-accent hover:text-accent-foreground"
                       aria-label="Editar"
-                      @click="
-                        props.onEdit ? props.onEdit(row) : emit('edit', row)
-                      "
+                      @click="props.onEdit ? props.onEdit(row) : emit('edit', row)"
                     >
                       <Pencil class="h-3.5 w-3.5" />
                     </button>
@@ -182,10 +157,7 @@ async function confirm() {
     </button>
 
     <Teleport to="body">
-      <div
-        v-if="toDelete"
-        class="fixed inset-0 z-50 flex items-center justify-center"
-      >
+      <div v-if="toDelete" class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="fixed inset-0 bg-black/50" @click="toDelete = null" />
         <div
           class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg"
@@ -196,9 +168,7 @@ async function confirm() {
               Se eliminará "{{ toDelete.description }}" de forma permanente.
             </p>
           </div>
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
             <button
               type="button"
               class="inline-flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm font-medium"

@@ -1,54 +1,47 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
-import { useFinances, type Subscription } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
-import { formatDateInput } from "~/utils/format";
+import type { Subscription } from '@/composables/useFinances';
+import { computed, reactive, watch } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
+import { formatDateInput } from '@/utils/format';
 
 const props = defineProps<{
   modelValue: boolean;
   editing?: Subscription | null;
 }>();
 
-const emit = defineEmits<{ (e: "update:modelValue", value: boolean): void }>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: boolean): void }>();
 
 const { createSubscription, updateSubscription } = useFinances();
 const { toast } = useToast();
 
 const BILLING_CYCLES = [
-  { value: "mensual", label: "Mensual" },
-  { value: "anual", label: "Anual" },
-  { value: "trimestral", label: "Trimestral" },
-  { value: "semestral", label: "Semestral" },
+  { value: 'mensual', label: 'Mensual' },
+  { value: 'anual', label: 'Anual' },
+  { value: 'trimestral', label: 'Trimestral' },
+  { value: 'semestral', label: 'Semestral' },
 ];
 
 const BUCKETS = [
-  { value: "fijo", label: "Fijos (50%)" },
-  { value: "extraordinario", label: "Extraordinarios (30%)" },
-  { value: "ahorro", label: "Ahorro (20%)" },
+  { value: 'fijo', label: 'Fijos (50%)' },
+  { value: 'extraordinario', label: 'Extraordinarios (30%)' },
+  { value: 'ahorro', label: 'Ahorro (20%)' },
 ];
 
-const CATS = [
-  "streaming",
-  "musica",
-  "cloud",
-  "software",
-  "gaming",
-  "salud",
-  "otro",
-];
+const CATS = ['streaming', 'musica', 'cloud', 'software', 'gaming', 'salud', 'otro'];
 const catOptions = CATS.map((c) => ({ value: c, label: c }));
 
 const form = reactive({
-  name: "",
-  provider: "",
-  billingCycle: "mensual",
-  amount: "",
+  name: '',
+  provider: '',
+  billingCycle: 'mensual',
+  amount: '',
   startDate: formatDateInput(new Date()),
-  renewalDate: "",
+  renewalDate: '',
   active: true,
-  bucket: "extraordinario",
-  category: "suscripcion",
-  notes: "",
+  bucket: 'extraordinario',
+  category: 'suscripcion',
+  notes: '',
   createExpense: true,
 });
 
@@ -57,28 +50,26 @@ watch(
   () => {
     if (!props.modelValue) return;
     const e = props.editing;
-    form.name = e?.name ?? "";
-    form.provider = e?.provider ?? "";
-    form.billingCycle = e?.billingCycle ?? "mensual";
-    form.amount = e ? String(e.amount) : "";
-    form.startDate = e
-      ? formatDateInput(e.startDate)
-      : formatDateInput(new Date());
-    form.renewalDate = e?.renewalDate ? formatDateInput(e.renewalDate) : "";
+    form.name = e?.name ?? '';
+    form.provider = e?.provider ?? '';
+    form.billingCycle = e?.billingCycle ?? 'mensual';
+    form.amount = e ? String(e.amount) : '';
+    form.startDate = e ? formatDateInput(e.startDate) : formatDateInput(new Date());
+    form.renewalDate = e?.renewalDate ? formatDateInput(e.renewalDate) : '';
     form.active = e?.active ?? true;
-    form.bucket = e?.bucket ?? "extraordinario";
-    form.category = e?.category ?? "suscripcion";
-    form.notes = e?.notes ?? "";
+    form.bucket = e?.bucket ?? 'extraordinario';
+    form.category = e?.category ?? 'suscripcion';
+    form.notes = e?.notes ?? '';
     form.createExpense = false;
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const isEditing = computed(() => !!props.editing);
 
 async function handleSubmit() {
   if (!form.name || !form.amount) {
-    toast.error("Faltan campos obligatorios");
+    toast.error('Faltan campos obligatorios');
     return;
   }
   const payload = {
@@ -97,28 +88,22 @@ async function handleSubmit() {
   try {
     if (props.editing) {
       await updateSubscription({ id: props.editing.id, ...payload });
-      toast.success("Suscripción actualizada");
+      toast.success('Suscripción actualizada');
     } else {
       await createSubscription(payload);
-      toast.success("Suscripción creada");
+      toast.success('Suscripción creada');
     }
-    emit("update:modelValue", false);
+    emit('update:modelValue', false);
   } catch (err: any) {
-    toast.error(err?.data?.statusMessage || err?.message || "Error al guardar");
+    toast.error(err?.data?.statusMessage || err?.message || 'Error al guardar');
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div
-        class="fixed inset-0 bg-black/50"
-        @click="emit('update:modelValue', false)"
-      />
+    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="fixed inset-0 bg-black/50" @click="emit('update:modelValue', false)" />
       <div
         class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg sm:max-w-lg"
       >
@@ -135,21 +120,17 @@ async function handleSubmit() {
             stroke="currentColor"
             stroke-width="2"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         <div class="flex flex-col space-y-1.5">
           <h2 class="text-lg font-semibold">
-            {{ isEditing ? "Editar suscripción" : "Nueva suscripción" }}
+            {{ isEditing ? 'Editar suscripción' : 'Nueva suscripción' }}
           </h2>
           <p class="text-sm text-muted-foreground">
-            Gestiona tus suscripciones mensuales y anuales. Si marcas "crear
-            gasto" se añade automáticamente al bucket seleccionado.
+            Gestiona tus suscripciones mensuales y anuales. Si marcas "crear gasto" se añade
+            automáticamente al bucket seleccionado.
           </p>
         </div>
 
@@ -157,40 +138,21 @@ async function handleSubmit() {
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label for="sub-name" class="text-sm font-medium">Nombre *</label>
-              <Input
-                id="sub-name"
-                v-model="form.name"
-                placeholder="Netflix, Spotify..."
-                required
-              />
+              <Input id="sub-name" v-model="form.name" placeholder="Netflix, Spotify..." required />
             </div>
             <div class="space-y-1.5">
-              <label for="sub-provider" class="text-sm font-medium"
-                >Proveedor</label
-              >
-              <Input
-                id="sub-provider"
-                v-model="form.provider"
-                placeholder="Netflix Inc."
-              />
+              <label for="sub-provider" class="text-sm font-medium">Proveedor</label>
+              <Input id="sub-provider" v-model="form.provider" placeholder="Netflix Inc." />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
-              <label for="sub-cycle" class="text-sm font-medium"
-                >Ciclo de facturación</label
-              >
-              <Select
-                v-model="form.billingCycle"
-                :options="BILLING_CYCLES"
-                id="sub-cycle"
-              />
+              <label for="sub-cycle" class="text-sm font-medium">Ciclo de facturación</label>
+              <Select id="sub-cycle" v-model="form.billingCycle" :options="BILLING_CYCLES" />
             </div>
             <div class="space-y-1.5">
-              <label for="sub-amount" class="text-sm font-medium"
-                >Importe € *</label
-              >
+              <label for="sub-amount" class="text-sm font-medium">Importe € *</label>
               <Input
                 id="sub-amount"
                 v-model="form.amount"
@@ -205,47 +167,33 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
-              <label for="sub-start" class="text-sm font-medium"
-                >Fecha de alta</label
-              >
+              <label for="sub-start" class="text-sm font-medium">Fecha de alta</label>
               <Input id="sub-start" v-model="form.startDate" type="date" />
             </div>
             <div class="space-y-1.5">
-              <label for="sub-renewal" class="text-sm font-medium"
-                >Próxima renovación</label
-              >
+              <label for="sub-renewal" class="text-sm font-medium">Próxima renovación</label>
               <Input id="sub-renewal" v-model="form.renewalDate" type="date" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
-              <label for="sub-bucket" class="text-sm font-medium"
-                >Bucket destino</label
-              >
-              <Select
-                v-model="form.bucket"
-                :options="BUCKETS"
-                id="sub-bucket"
-              />
+              <label for="sub-bucket" class="text-sm font-medium">Bucket destino</label>
+              <Select id="sub-bucket" v-model="form.bucket" :options="BUCKETS" />
             </div>
             <div class="space-y-1.5">
               <label for="sub-cat" class="text-sm font-medium">Categoría</label>
-              <Select
-                v-model="form.category"
-                :options="catOptions"
-                id="sub-cat"
-              />
+              <Select id="sub-cat" v-model="form.category" :options="catOptions" />
             </div>
           </div>
 
           <div class="flex items-center gap-2">
-            <Switch v-model="form.active" id="sub-active" />
+            <Switch id="sub-active" v-model="form.active" />
             <label for="sub-active" class="text-sm font-medium">Activa</label>
           </div>
 
           <div v-if="!isEditing" class="flex items-center gap-2">
-            <Checkbox v-model="form.createExpense" id="sub-create-exp" />
+            <Checkbox id="sub-create-exp" v-model="form.createExpense" />
             <label for="sub-create-exp" class="text-sm"
               >Crear gasto mensual/anual asociado automáticamente</label
             >
@@ -261,18 +209,13 @@ async function handleSubmit() {
             />
           </div>
 
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
-            <Button
-              variant="outline"
-              type="button"
-              @click="emit('update:modelValue', false)"
-              >Cancelar</Button
-            >
-            <Button type="submit">{{
-              isEditing ? "Guardar cambios" : "Crear suscripción"
-            }}</Button>
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <Button variant="outline" type="button" @click="emit('update:modelValue', false)">
+              Cancelar
+            </Button>
+            <Button type="submit">
+              {{ isEditing ? 'Guardar cambios' : 'Crear suscripción' }}
+            </Button>
           </div>
         </form>
       </div>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { Home, Sparkles, PiggyBank } from "@lucide/vue";
-import { formatEUR, BUCKET_COLORS, BUCKET_LABELS } from "~/utils/format";
-import type { Summary } from "~/composables/useFinances";
+import type { Summary } from '@/composables/useFinances';
+import { Home, PiggyBank, Sparkles } from '@lucide/vue';
+import { computed } from 'vue';
+import { BUCKET_COLORS, BUCKET_LABELS, formatEUR } from '@/utils/format';
 
 const props = defineProps<{ summary: Summary }>();
 
@@ -10,42 +10,42 @@ const items = computed(() => {
   const { buckets } = props.summary;
   return [
     {
-      key: "fijo",
+      key: 'fijo',
       label: BUCKET_LABELS.fijo,
       icon: Home,
       target: buckets.targets.fixed,
       real: buckets.monthly.fijo || 0,
       pct: buckets.pct.fixed,
       color: BUCKET_COLORS.fijo,
-      hint: "Vivienda, comida, transporte, suministros, salud.",
+      hint: 'Vivienda, comida, transporte, suministros, salud.',
     },
     {
-      key: "extraordinario",
+      key: 'extraordinario',
       label: BUCKET_LABELS.extraordinario,
       icon: Sparkles,
       target: buckets.targets.extra,
       real: buckets.monthly.extraordinario || 0,
       pct: buckets.pct.extra,
       color: BUCKET_COLORS.extraordinario,
-      hint: "Ocio, suscripciones, restaurantes, caprichos.",
+      hint: 'Ocio, suscripciones, restaurantes, caprichos.',
     },
     {
-      key: "ahorro",
+      key: 'ahorro',
       label: BUCKET_LABELS.ahorro,
       icon: PiggyBank,
       target: buckets.targets.savings,
       real: buckets.monthly.ahorro || 0,
       pct: buckets.pct.savings,
       color: BUCKET_COLORS.ahorro,
-      hint: "Fondo de estabilidad → cuenta remunerada.",
+      hint: 'Fondo de estabilidad → cuenta remunerada.',
     },
   ];
 });
 
 function baseLabel(base: string) {
-  if (base === "salario") return "el salario";
-  if (base === "total") return "el total de ingresos";
-  return "base personalizada";
+  if (base === 'salario') return 'el salario';
+  if (base === 'total') return 'el total de ingresos';
+  return 'base personalizada';
 }
 </script>
 
@@ -59,9 +59,7 @@ function baseLabel(base: string) {
       </h3>
       <p class="text-sm text-muted-foreground">
         Objetivos calculados sobre
-        <strong class="text-foreground">{{
-          baseLabel(summary.buckets.base)
-        }}</strong>
+        <strong class="text-foreground">{{ baseLabel(summary.buckets.base) }}</strong>
         ({{ formatEUR(summary.buckets.baseAmount) }}/mes).
       </p>
     </div>
@@ -76,15 +74,17 @@ function baseLabel(base: string) {
               <component :is="it.icon" class="h-4 w-4" />
             </div>
             <div>
-              <p class="font-medium">{{ it.label }}</p>
-              <p class="text-xs text-muted-foreground">{{ it.hint }}</p>
+              <p class="font-medium">
+                {{ it.label }}
+              </p>
+              <p class="text-xs text-muted-foreground">
+                {{ it.hint }}
+              </p>
             </div>
           </div>
           <div class="text-right tabular-nums">
             <p class="font-semibold">{{ formatEUR(it.real) }}/mes</p>
-            <p class="text-xs text-muted-foreground">
-              objetivo {{ formatEUR(it.target) }}
-            </p>
+            <p class="text-xs text-muted-foreground">objetivo {{ formatEUR(it.target) }}</p>
           </div>
         </div>
 
@@ -116,8 +116,7 @@ function baseLabel(base: string) {
             }}
           </span>
           <span class="text-muted-foreground">
-            {{ Math.round(it.target > 0 ? (it.real / it.target) * 100 : 0) }}%
-            del objetivo
+            {{ Math.round(it.target > 0 ? (it.real / it.target) * 100 : 0) }}% del objetivo
           </span>
         </div>
       </div>

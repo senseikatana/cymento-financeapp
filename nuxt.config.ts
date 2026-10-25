@@ -1,14 +1,21 @@
+import { fileURLToPath } from 'node:url';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ['@nuxtjs/tailwindcss'],
 
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: '2025-07-15',
 
   devtools: { enabled: true },
 
-  css: ["~/assets/css/main.css"],
+  // Alias de rutas del proyecto: "@" apunta a app/ (srcDir de Nuxt 4)
+  alias: {
+    '@': fileURLToPath(new URL('./app', import.meta.url)),
+  },
 
-  components: [{ path: "~/components", pathPrefix: false }],
+  css: ['@/assets/css/main.css'],
+
+  components: [{ path: '@/components', pathPrefix: false }],
 
   tailwindcss: {
     cssPath: false,
@@ -16,13 +23,13 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "Finanzas Personales — Regla 50/30/20",
-      htmlAttrs: { lang: "es" },
+      title: 'Finanzas Personales — Regla 50/30/20',
+      htmlAttrs: { lang: 'es' },
       meta: [
         {
-          name: "description",
+          name: 'description',
           content:
-            "Gestión de finanzas personales con dashboard, suscripciones y sincronización Excel. Pensado para SMI 2026 y meta de colchón sept-2027.",
+            'Gestión de finanzas personales con dashboard, suscripciones y sincronización Excel. Pensado para SMI 2026 y meta de colchón sept-2027.',
         },
       ],
     },

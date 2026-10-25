@@ -1,15 +1,11 @@
+import type { Locale } from 'katanakit-js';
 // Helpers de formato monetario y de fechas en español — delegan en katanakit-js
-import {
-  useFormat,
-  useFormatCurrency,
-  useFormatNumber,
-  type Locale,
-} from "katanakit-js";
+import { useFormat, useFormatCurrency, useFormatNumber } from 'katanakit-js';
 
-const LOCALE: Locale = "es";
+const LOCALE: Locale = 'es';
 
 export function formatEUR(amount: number, locale: Locale = LOCALE): string {
-  return useFormatCurrency({ amount: amount || 0, currency: "EUR", locale });
+  return useFormatCurrency({ amount: amount || 0, currency: 'EUR', locale });
 }
 
 export function formatNumber(amount: number, locale: Locale = LOCALE): string {
@@ -18,74 +14,79 @@ export function formatNumber(amount: number, locale: Locale = LOCALE): string {
 
 export function formatDate(
   date: Date | string | null | undefined,
-  locale: Locale = LOCALE,
+  locale: Locale = LOCALE
 ): string {
-  if (!date) return "—";
+  if (!date) return '—';
   try {
-    // Los strings ISO con Z ("...T00:00:00.000Z") rompen Temporal.PlainDateTime;
-    // se normalizan a Date, que useFormat convierte vía epoch ms.
-    const d = typeof date === "string" ? new Date(date) : date;
-    return useFormat(d, locale, {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+    // 'YYYY-MM-DD' se pasa como PlainDate (sin zona); los ISO con hora, como Date.
+    const input =
+      typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)
+        ? date
+        : typeof date === 'string'
+          ? new Date(date)
+          : date;
+    return useFormat(input, locale, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
   } catch {
-    return "—";
+    return '—';
   }
 }
 
 export function formatDateInput(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toISOString().slice(0, 10);
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}/.test(date)) return date.slice(0, 10);
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 // Colores de los tres buckets (sin indigo/blue para cumplir con la guía de estilo)
 export const BUCKET_COLORS: Record<string, string> = {
-  fijo: "#10b981", // emerald
-  extraordinario: "#f59e0b", // amber
-  ahorro: "#8b5cf6", // violet
+  fijo: '#10b981', // emerald
+  extraordinario: '#f59e0b', // amber
+  ahorro: '#8b5cf6', // violet
 };
 
 export const BUCKET_LABELS: Record<string, string> = {
-  fijo: "Fijos (50%)",
-  extraordinario: "Extraordinarios (30%)",
-  ahorro: "Ahorro (20%)",
+  fijo: 'Fijos (50%)',
+  extraordinario: 'Extraordinarios (30%)',
+  ahorro: 'Ahorro (20%)',
 };
 
 export const BUCKET_SHORT: Record<string, string> = {
-  fijo: "Fijos",
-  extraordinario: "Extras",
-  ahorro: "Ahorro",
+  fijo: 'Fijos',
+  extraordinario: 'Extras',
+  ahorro: 'Ahorro',
 };
 
 export const FREQUENCY_LABELS: Record<string, string> = {
-  unico: "Único",
-  mensual: "Mensual",
-  anual: "Anual",
-  trimestral: "Trimestral",
-  semestral: "Semestral",
+  unico: 'Único',
+  mensual: 'Mensual',
+  anual: 'Anual',
+  trimestral: 'Trimestral',
+  semestral: 'Semestral',
 };
 
 export const INCOME_TYPE_LABELS: Record<string, string> = {
-  salario: "Salario",
-  subsidio_paro: "Subsidio paro",
-  ahorros_previos: "Ahorros previos",
-  otro: "Otro",
+  salario: 'Salario',
+  subsidio_paro: 'Subsidio paro',
+  ahorros_previos: 'Ahorros previos',
+  otro: 'Otro',
 };
 
 // Convierte una cantidad según frecuencia a su equivalente mensual
 export function toMonthly(amount: number, freq: string): number {
   switch (freq) {
-    case "mensual":
+    case 'mensual':
       return amount;
-    case "anual":
+    case 'anual':
       return amount / 12;
-    case "trimestral":
+    case 'trimestral':
       return amount / 3;
-    case "semestral":
+    case 'semestral':
       return amount / 6;
-    case "unico":
+    case 'unico':
       return 0;
     default:
       return amount;
@@ -94,15 +95,15 @@ export function toMonthly(amount: number, freq: string): number {
 
 export function toYearly(amount: number, freq: string): number {
   switch (freq) {
-    case "mensual":
+    case 'mensual':
       return amount * 12;
-    case "anual":
+    case 'anual':
       return amount;
-    case "trimestral":
+    case 'trimestral':
       return amount * 4;
-    case "semestral":
+    case 'semestral':
       return amount * 2;
-    case "unico":
+    case 'unico':
       return amount;
     default:
       return amount * 12;

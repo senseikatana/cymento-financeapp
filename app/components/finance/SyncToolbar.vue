@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import {
-  Download,
-  Upload,
-  Loader2,
-  FileSpreadsheet,
-  Database,
-} from "@lucide/vue";
-import { useFinances } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
+import { Database, Download, FileSpreadsheet, Loader2, Upload } from '@lucide/vue';
+import { ref } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
 
 const { exportExcel, importExcel, seed } = useFinances();
 const { toast } = useToast();
@@ -23,9 +17,9 @@ async function handleExport() {
   exporting.value = true;
   try {
     await exportExcel();
-    toast.success("Excel exportado correctamente");
+    toast.success('Excel exportado correctamente');
   } catch (e: any) {
-    toast.error(e?.data?.statusMessage || e?.message || "Error al exportar");
+    toast.error(e?.data?.statusMessage || e?.message || 'Error al exportar');
   } finally {
     exporting.value = false;
   }
@@ -38,15 +32,13 @@ async function handleFile(ev: Event) {
   try {
     const result = await importExcel(f);
     toast.success(
-      `Importado: ${result.imported.incomes} ingresos, ${result.imported.expenses} gastos, ${result.imported.subscriptions} suscripciones`,
+      `Importado: ${result.imported.incomes} ingresos, ${result.imported.expenses} gastos, ${result.imported.subscriptions} suscripciones`
     );
   } catch (err: any) {
-    toast.error(
-      err?.data?.statusMessage || err?.message || "Error al importar",
-    );
+    toast.error(err?.data?.statusMessage || err?.message || 'Error al importar');
   } finally {
     importing.value = false;
-    if (fileRef.value) fileRef.value.value = "";
+    if (fileRef.value) fileRef.value.value = '';
   }
 }
 
@@ -54,12 +46,10 @@ async function handleSeed() {
   seeding.value = true;
   try {
     await seed();
-    toast.success("Datos de ejemplo cargados");
+    toast.success('Datos de ejemplo cargados');
     showConfirmSeed.value = false;
   } catch (e: any) {
-    toast.error(
-      e?.data?.statusMessage || e?.message || "Error al cargar datos",
-    );
+    toast.error(e?.data?.statusMessage || e?.message || 'Error al cargar datos');
     showConfirmSeed.value = false;
   } finally {
     seeding.value = false;
@@ -91,13 +81,7 @@ async function handleSeed() {
       Importar Excel
     </button>
 
-    <input
-      ref="fileRef"
-      type="file"
-      accept=".xlsx,.xls"
-      class="hidden"
-      @change="handleFile"
-    />
+    <input ref="fileRef" type="file" accept=".xlsx,.xls" class="hidden" @change="handleFile" />
 
     <div class="relative">
       <button
@@ -116,9 +100,7 @@ async function handleSeed() {
       >
         <p class="text-xs text-muted-foreground mb-2">
           Esto
-          <strong class="text-rose-600"
-            >borrará todos tus datos actuales</strong
-          >
+          <strong class="text-rose-600">borrará todos tus datos actuales</strong>
           y cargará el caso del usuario.
         </p>
         <div class="flex gap-2">
@@ -140,9 +122,7 @@ async function handleSeed() {
       </div>
     </div>
 
-    <div
-      class="ml-auto hidden sm:flex items-center gap-1 text-xs text-muted-foreground"
-    >
+    <div class="ml-auto hidden sm:flex items-center gap-1 text-xs text-muted-foreground">
       <FileSpreadsheet class="h-3.5 w-3.5" />
       Compatible con OnlyOffice / LibreOffice / Google Sheets
     </div>

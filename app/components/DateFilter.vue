@@ -1,105 +1,94 @@
-<!-- DateFilter.vue -->
+<script setup lang="ts">
+import { Calendar, CalendarRange, X } from '@lucide/vue';
+import { ref } from 'vue';
+
+// Button/Input están auto-importados por Nuxt (components.pathPrefix: false)
+const emit = defineEmits<{ rangeSelected: [range: { start: string; end: string } | null] }>();
+
+const showCustomRange = ref(false);
+const startDate = ref('');
+const endDate = ref('');
+
+function toISO(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function currentMonth() {
+  const now = new Date();
+  startDate.value = toISO(new Date(now.getFullYear(), now.getMonth(), 1));
+  endDate.value = toISO(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+  emit('rangeSelected', { start: startDate.value, end: endDate.value });
+}
+
+function currentYear() {
+  const now = new Date();
+  startDate.value = `${now.getFullYear()}-01-01`;
+  endDate.value = toISO(now);
+  emit('rangeSelected', { start: startDate.value, end: endDate.value });
+}
+
+function clearRange() {
+  emit('rangeSelected', null);
+}
+
+function applyCustomRange() {
+  if (!startDate.value || !endDate.value) return;
+  const range =
+    startDate.value <= endDate.value
+      ? { start: startDate.value, end: endDate.value }
+      : { start: endDate.value, end: startDate.value };
+  showCustomRange.value = false;
+  emit('rangeSelected', range);
+}
+</script>
+
 <template>
-  <div class="flex flex-col sm:flex-row gap-2">
-    <div class="flex items-center gap-2">
-      <label class="text-sm font-medium">Mes actual</label>
-      <Button variant="outline" @click="handleCurrentMonth">
-        <CalendarIcon class="h-4 w-4 mr-1" />
-        <span>Mes actual</span>
-      </Button>
-    </div>
-    <div class="flex items-center gap-2">
-      <label class="text-sm font-medium">Año actual</label>
-      <Button variant="outline" @click="handleCurrentYear">
-        <CalendarIcon class="h-4 w-4 mr-1" />
-        <span>Año actual</span>
-      </Button>
-    </div>
-    <div class="flex items-center gap-2">
-      <label class="text-sm font-medium">Personalizado</label>
-      <Button variant="outline" @click="showCustomRange = true">
-        <CalendarRangeIcon class="h-4 w-4 mr-1" />
-        <span>Personalizado</span>
-      </Button>
-    </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <Button variant="outline" @click="currentMonth">
+      <Calendar class="h-4 w-4" />
+      Mes actual
+    </Button>
+    <Button variant="outline" @click="currentYear">
+      <Calendar class="h-4 w-4" />
+      Año actual
+    </Button>
+    <Button variant="outline" @click="showCustomRange = true">
+      <CalendarRange class="h-4 w-4" />
+      Personalizado
+    </Button>
+    <Button variant="ghost" @click="clearRange">
+      <X class="h-4 w-4" />
+      Limpiar
+    </Button>
+
     <Teleport to="body">
       <div
         v-if="showCustomRange"
-        class="fixed inset-0 z-50 bg-background rounded-lg p-4 shadow-lg border border-input max-w-md mx-auto mt-4"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        @click.self="showCustomRange = false"
       >
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="text-sm font-medium">Selecciona rango de fechas</h3>
-          <Button variant="outline" @click="showCustomRange = false">
-            <XIcon class="h-4 w-4" />
-            Cancelar
+        <div class="w-full max-w-md rounded-lg border bg-popover p-4 shadow-lg">
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-sm font-semibold">Selecciona un rango de fechas</h3>
+            <Button variant="ghost" size="sm" @click="showCustomRange = false">
+              <X class="h-4 w-4" />
+            </Button>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 space-y-1">
+              <label for="range-start" class="text-xs font-medium">Inicio</label>
+              <Input id="range-start" v-model="startDate" type="date" class="w-full" />
+            </div>
+            <div class="flex-1 space-y-1">
+              <label for="range-end" class="text-xs font-medium">Fin</label>
+              <Input id="range-end" v-model="endDate" type="date" class="w-full" />
+            </div>
+          </div>
+          <Button class="mt-4 w-full" :disabled="!startDate || !endDate" @click="applyCustomRange">
+            Aplicar
           </Button>
         </div>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <div class="flex items-center gap-2">
-            <label class="text-xs font-medium">Fecha de inicio</label>
-            <Input
-              type="date"
-              v-model="startDate"
-              @change="updateCustomRange"
-              class="flex-1"
-            />
-          </div>
-          <div class="flex items-center gap-2">
-            <label class="text-xs font-medium">Fecha de fin</label>
-            <Input
-              type="date"
-              v-model="endDate"
-              @change="updateCustomRange"
-              class="flex-1"
-            />
-          </div>
-        </div>
-        <Button @click="applyCustomRange" class="mt-3 w-full sm:w-auto"
-          >Aplicar</Button
-        >
       </div>
     </Teleport>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from "vue";
-import { CalendarIcon, CalendarRangeIcon, X } from "@lucide/vue";
-import { Button, Input } from "~/components/ui";
-
-const showCustomRange = ref(false);
-const startDate = ref<Date | "">("");
-const endDate = ref<Date | "">("");
-
-const handleCurrentMonth = () => {
-  const today = new Date();
-  startDate.value = today.toISOString().split("T")[0];
-  endDate.value = today.toISOString().split("T")[0];
-  showCustomRange.value = false;
-};
-
-const handleCurrentYear = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  startDate.value = `${year}-01-01`;
-  endDate.value = today.toISOString().split("T")[0];
-  showCustomRange.value = false;
-};
-
-const updateCustomRange = () => {
-  if (!startDate.value || !endDate.value) return;
-  const start = new Date(startDate.value);
-  const end = new Date(endDate.value);
-  if (start > end) {
-    startDate.value = endDate.value;
-  }
-};
-
-const applyCustomRange = () => {
-  if (!startDate.value || !endDate.value) return;
-  showCustomRange.value = false;
-  emit("rangeSelected", { start: startDate.value, end: endDate.value });
-};
-
-defineEmits(["rangeSelected", "close"]);
-</script>

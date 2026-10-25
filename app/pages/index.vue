@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import type { Expense, Income, Subscription } from '@/composables/useFinances';
 import {
-  Wallet,
-  TrendingUp,
-  TrendingDown,
-  PiggyBank,
-  Settings as SettingsIcon,
-  Plus,
-  Calendar,
-  Repeat,
   Bell,
+  Calendar,
   Loader2,
+  PiggyBank,
+  Plus,
+  Repeat,
   ScrollText,
-} from "@lucide/vue";
-import {
-  useFinances,
-  type Income,
-  type Expense,
-  type Subscription,
-} from "~/composables/useFinances";
-import { formatEUR, formatDate, toMonthly, toYearly } from "~/utils/format";
+  Settings as SettingsIcon,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from '@lucide/vue';
+import { computed, ref } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { formatDate, formatEUR, toMonthly, toYearly } from '@/utils/format';
 
 const {
   summary,
@@ -30,15 +26,9 @@ const {
   loadingIncomes,
   loadingExpenses,
   loadingSubs,
-  dateRange,
-  monthlyExpenses,
-  yearlyExpenses,
-  realExpenses,
-  calculateMonthlyExpenses,
-  calculateRealExpenses,
 } = useFinances();
 
-const activeTab = ref("dashboard");
+const activeTab = ref('dashboard');
 const incomeDialog = ref(false);
 const expenseDialog = ref(false);
 const subDialog = ref(false);
@@ -53,11 +43,42 @@ function openNewIncome() {
   incomeDialog.value = true;
 }
 
-function handleDateRangeChange(range: { start: string; end: string }) {
-  dateRange.value = range;
-  calculateMonthlyExpenses();
-  calculateRealExpenses();
+// ---------- Filtro de fechas y gastos reales ----------
+const expenseRange = ref<{ start: string; end: string } | null>(null);
+
+function handleDateRangeChange(range: { start: string; end: string } | null) {
+  expenseRange.value = range;
 }
+
+function inRange(dateStr: string, start: string, end: string): boolean {
+  const day = dateStr.slice(0, 10);
+  return day >= start && day <= end;
+}
+
+const realMonth = computed(() => {
+  const now = new Date();
+  const start = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const end = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-31`;
+  return expenses.value
+    .filter((e) => inRange(e.date, start, end))
+    .reduce((sum, e) => sum + e.amount, 0);
+});
+
+const realYear = computed(() => {
+  const year = new Date().getFullYear();
+  return expenses.value
+    .filter((e) => inRange(e.date, `${year}-01-01`, `${year}-12-31`))
+    .reduce((sum, e) => sum + e.amount, 0);
+});
+
+const rangeExpenses = computed(() => {
+  if (!expenseRange.value) return expenses.value;
+  const { start, end } = expenseRange.value;
+  return expenses.value.filter((e) => inRange(e.date, start, end));
+});
+
+const rangeTotal = computed(() => rangeExpenses.value.reduce((sum, e) => sum + e.amount, 0));
+
 function openEditIncome(i: Income) {
   editingIncome.value = i;
   incomeDialog.value = true;
@@ -81,16 +102,10 @@ function openEditSub(s: Subscription) {
 
 const activeSubs = computed(() => subs.value.filter((s) => s.active));
 const subsMonthlyEquivalent = computed(() =>
-  activeSubs.value.reduce(
-    (sum, s) => sum + toMonthly(s.amount, s.billingCycle),
-    0,
-  ),
+  activeSubs.value.reduce((sum, s) => sum + toMonthly(s.amount, s.billingCycle), 0)
 );
 const subsYearly = computed(() =>
-  activeSubs.value.reduce(
-    (sum, s) => sum + toYearly(s.amount, s.billingCycle),
-    0,
-  ),
+  activeSubs.value.reduce((sum, s) => sum + toYearly(s.amount, s.billingCycle), 0)
 );
 </script>
 
@@ -100,19 +115,13 @@ const subsYearly = computed(() =>
     <header
       class="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <div
-        class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3"
-      >
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
         <div class="flex items-center gap-2">
-          <div
-            class="rounded-lg bg-gradient-to-br from-emerald-500 to-violet-600 p-1.5 text-white"
-          >
+          <div class="rounded-lg bg-gradient-to-br from-emerald-500 to-violet-600 p-1.5 text-white">
             <Wallet class="h-5 w-5" />
           </div>
           <div>
-            <h1 class="text-base sm:text-lg font-bold leading-none">
-              Finanzas Personales
-            </h1>
+            <h1 class="text-base sm:text-lg font-bold leading-none">Finanzas Personales</h1>
             <p class="text-xs text-muted-foreground hidden sm:block">
               Regla 50/30/20 · Sincronizable con Excel / Google Sheets
             </p>
@@ -128,9 +137,7 @@ const subsYearly = computed(() =>
     </header>
 
     <!-- ===== Main ===== -->
-    <main
-      class="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-6"
-    >
+    <main class="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-6">
       <!-- Sync toolbar + DateFilter -->
       <div class="rounded-xl border bg-card p-4">
         <div class="flex flex-col sm:flex-row gap-3">
@@ -138,21 +145,28 @@ const subsYearly = computed(() =>
             <div class="flex flex-col gap-3">
               <div>
                 <h2 class="text-sm font-semibold flex items-center gap-2">
-                  <ScrollText
-                    class="h-4 w-4 text-violet-600 dark:text-violet-400"
-                  />
+                  <ScrollText class="h-4 w-4 text-violet-600 dark:text-violet-400" />
                   Sincronización
                 </h2>
                 <p class="text-xs text-muted-foreground mt-0.5">
-                  Exporta tu presupuesto a Excel para abrirlo en
-                  OnlyOffice/LibreOffice o subirlo a Google Drive.
+                  Exporta tu presupuesto a Excel para abrirlo en OnlyOffice/LibreOffice o subirlo a
+                  Google Drive.
                 </p>
               </div>
               <SyncToolbar />
             </div>
           </div>
-          <div class="flex-none">
-            <DateFilter @rangeSelected="handleDateRangeChange" />
+          <div class="flex-none sm:border-l sm:pl-4 space-y-2">
+            <p class="text-xs font-medium text-muted-foreground">Filtrar gastos por fecha</p>
+            <DateFilter @range-selected="handleDateRangeChange" />
+            <p v-if="expenseRange" class="text-xs text-muted-foreground">
+              {{ formatDate(expenseRange.start) }} – {{ formatDate(expenseRange.end) }} ·
+              <strong class="text-foreground">{{ formatEUR(rangeTotal) }}</strong>
+              ({{ rangeExpenses.length }} movimientos)
+            </p>
+            <p v-else class="text-xs text-muted-foreground">
+              Sin filtro: mostrando todos los gastos.
+            </p>
           </div>
         </div>
       </div>
@@ -160,9 +174,7 @@ const subsYearly = computed(() =>
       <!-- Tabs -->
       <Tabs v-model="activeTab">
         <TabsList class="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
-          <TabsTrigger value="dashboard" class="text-xs sm:text-sm"
-            >Dashboard</TabsTrigger
-          >
+          <TabsTrigger value="dashboard" class="text-xs sm:text-sm"> Dashboard </TabsTrigger>
           <TabsTrigger value="ingresos" class="text-xs sm:text-sm">
             Ingresos
             <span
@@ -194,15 +206,12 @@ const subsYearly = computed(() =>
 
         <!-- ===== DASHBOARD ===== -->
         <TabsContent value="dashboard" class="space-y-6 mt-4">
-          <div
-            v-if="loadingSummary || !summary"
-            class="flex items-center justify-center py-20"
-          >
+          <div v-if="loadingSummary || !summary" class="flex items-center justify-center py-20">
             <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
           <template v-else>
             <!-- KPIs -->
-            <div class="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            <div class="grid gap-4 grid-cols-2 lg:grid-cols-3">
               <KpiCard
                 title="Ingresos / mes"
                 :value="formatEUR(summary.totals.incomeMonthly)"
@@ -211,23 +220,23 @@ const subsYearly = computed(() =>
                 accent="green"
               />
               <KpiCard
-                title="Gastos / mes"
+                title="Gastos / mes (presupuesto)"
                 :value="formatEUR(summary.totals.expensesMonthly)"
                 :subtitle="`Saldo: ${formatEUR(summary.totals.balanceMonthly)}`"
                 :icon="TrendingDown"
                 :accent="summary.totals.balanceMonthly >= 0 ? 'slate' : 'red'"
               />
               <KpiCard
-                title="Gastos reales"
-                :value="formatEUR(realExpenses)"
-                :subtitle="`vs ${formatEUR(monthlyExpenses)}`"
+                title="Gastado este mes"
+                :value="formatEUR(realMonth)"
+                :subtitle="`de ${formatEUR(summary.totals.expensesMonthly)} previstos`"
                 :icon="TrendingDown"
-                :accent="realExpenses <= monthlyExpenses ? 'green' : 'red'"
+                :accent="realMonth <= summary.totals.expensesMonthly ? 'green' : 'red'"
               />
               <KpiCard
-                title="Gastos anuales"
-                :value="formatEUR(yearlyExpenses)"
-                :subtitle="`Total anual`"
+                title="Gastado este año"
+                :value="formatEUR(realYear)"
+                :subtitle="`año ${new Date().getFullYear()} en curso`"
                 :icon="TrendingDown"
                 accent="violet"
               />
@@ -246,8 +255,7 @@ const subsYearly = computed(() =>
                 accent="violet"
                 :progress="
                   summary.buckets.targets.savings > 0
-                    ? ((summary.buckets.monthly.ahorro || 0) /
-                        summary.buckets.targets.savings) *
+                    ? ((summary.buckets.monthly.ahorro || 0) / summary.buckets.targets.savings) *
                       100
                     : 0
                 "
@@ -255,12 +263,7 @@ const subsYearly = computed(() =>
             </div>
 
             <!-- Charts -->
-            <DashboardCharts
-              :summary="summary"
-              :realExpenses="realExpenses"
-              :monthlyExpenses="monthlyExpenses"
-              :yearlyExpenses="yearlyExpenses"
-            />
+            <DashboardCharts :summary="summary" :real-month="realMonth" :real-year="realYear" />
 
             <!-- Rule breakdown -->
             <RuleBreakdownCard :summary="summary" />
@@ -285,10 +288,10 @@ const subsYearly = computed(() =>
                   class="flex items-center justify-between rounded-lg border p-3"
                 >
                   <div class="min-w-0">
-                    <p class="text-sm font-medium truncate">{{ r.name }}</p>
-                    <p
-                      class="text-xs text-muted-foreground flex items-center gap-1"
-                    >
+                    <p class="text-sm font-medium truncate">
+                      {{ r.name }}
+                    </p>
+                    <p class="text-xs text-muted-foreground flex items-center gap-1">
                       <Calendar class="h-3 w-3" />
                       {{ formatDate(r.renewalDate) }}
                     </p>
@@ -308,9 +311,7 @@ const subsYearly = computed(() =>
                       class="text-xs"
                     >
                       {{
-                        r.daysUntil < 0
-                          ? `hace ${Math.abs(r.daysUntil)}d`
-                          : `en ${r.daysUntil}d`
+                        r.daysUntil < 0 ? `hace ${Math.abs(r.daysUntil)}d` : `en ${r.daysUntil}d`
                       }}
                     </p>
                   </div>
@@ -326,8 +327,8 @@ const subsYearly = computed(() =>
             <div>
               <h2 class="text-lg font-semibold">Ingresos</h2>
               <p class="text-sm text-muted-foreground">
-                Salario, subsidio de paro, ahorros previos. Marca recurrentes
-                para que cuenten en los totales mensuales.
+                Salario, subsidio de paro, ahorros previos. Marca recurrentes para que cuenten en
+                los totales mensuales.
               </p>
             </div>
             <Button size="sm" @click="openNewIncome">
@@ -337,12 +338,7 @@ const subsYearly = computed(() =>
           <div v-if="loadingIncomes" class="flex justify-center py-10">
             <Loader2 class="h-5 w-5 animate-spin" />
           </div>
-          <IncomesTable
-            v-else
-            :items="incomes"
-            @edit="openEditIncome"
-            @add="openNewIncome"
-          />
+          <IncomesTable v-else :items="incomes" @edit="openEditIncome" @add="openNewIncome" />
         </TabsContent>
 
         <!-- ===== GASTOS ===== -->
@@ -351,8 +347,8 @@ const subsYearly = computed(() =>
             <div>
               <h2 class="text-lg font-semibold">Gastos</h2>
               <p class="text-sm text-muted-foreground">
-                Clasificados en los 3 buckets de la regla 50/30/20. Marca
-                frecuentes como mensuales/anuales para que cuenten.
+                Clasificados en los 3 buckets de la regla 50/30/20. Marca frecuentes como
+                mensuales/anuales para que cuenten.
               </p>
             </div>
             <Button size="sm" @click="openNewExpense">
@@ -364,7 +360,7 @@ const subsYearly = computed(() =>
           </div>
           <ExpensesTable
             v-else
-            :items="expenses"
+            :items="rangeExpenses"
             @edit="openEditExpense"
             @add="openNewExpense"
           />
@@ -376,8 +372,8 @@ const subsYearly = computed(() =>
             <div>
               <h2 class="text-lg font-semibold">Suscripciones</h2>
               <p class="text-sm text-muted-foreground">
-                Gestiona tus pagos recurrentes. Las mensuales y anuales se
-                contabilizan automáticamente en el bucket seleccionado.
+                Gestiona tus pagos recurrentes. Las mensuales y anuales se contabilizan
+                automáticamente en el bucket seleccionado.
               </p>
             </div>
             <Button size="sm" @click="openNewSub">
@@ -389,13 +385,9 @@ const subsYearly = computed(() =>
           </div>
           <template v-else>
             <div v-if="subs.length > 0" class="grid gap-3 sm:grid-cols-3">
-              <div
-                class="rounded-xl border bg-card text-card-foreground shadow-sm"
-              >
+              <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div class="flex flex-col space-y-1.5 p-6 pb-2">
-                  <h3
-                    class="text-xs uppercase tracking-wide text-muted-foreground"
-                  >
+                  <h3 class="text-xs uppercase tracking-wide text-muted-foreground">
                     Mensual equivalente
                   </h3>
                 </div>
@@ -403,37 +395,23 @@ const subsYearly = computed(() =>
                   <p class="text-2xl font-bold tabular-nums">
                     {{ formatEUR(subsMonthlyEquivalent) }}
                   </p>
-                  <p class="text-xs text-muted-foreground mt-1">
-                    suma de todas las activas
-                  </p>
+                  <p class="text-xs text-muted-foreground mt-1">suma de todas las activas</p>
                 </div>
               </div>
-              <div
-                class="rounded-xl border bg-card text-card-foreground shadow-sm"
-              >
+              <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div class="flex flex-col space-y-1.5 p-6 pb-2">
-                  <h3
-                    class="text-xs uppercase tracking-wide text-muted-foreground"
-                  >
-                    Coste anual
-                  </h3>
+                  <h3 class="text-xs uppercase tracking-wide text-muted-foreground">Coste anual</h3>
                 </div>
                 <div class="p-6 pt-0">
                   <p class="text-2xl font-bold tabular-nums">
                     {{ formatEUR(subsYearly) }}
                   </p>
-                  <p class="text-xs text-muted-foreground mt-1">
-                    lo que gastarás en 12 meses
-                  </p>
+                  <p class="text-xs text-muted-foreground mt-1">lo que gastarás en 12 meses</p>
                 </div>
               </div>
-              <div
-                class="rounded-xl border bg-card text-card-foreground shadow-sm"
-              >
+              <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div class="flex flex-col space-y-1.5 p-6 pb-2">
-                  <h3
-                    class="text-xs uppercase tracking-wide text-muted-foreground"
-                  >
+                  <h3 class="text-xs uppercase tracking-wide text-muted-foreground">
                     Suscripciones activas
                   </h3>
                 </div>
@@ -441,17 +419,11 @@ const subsYearly = computed(() =>
                   <p class="text-2xl font-bold tabular-nums">
                     {{ activeSubs.length }}
                   </p>
-                  <p class="text-xs text-muted-foreground mt-1">
-                    de {{ subs.length }} totales
-                  </p>
+                  <p class="text-xs text-muted-foreground mt-1">de {{ subs.length }} totales</p>
                 </div>
               </div>
             </div>
-            <SubscriptionsTable
-              :items="subs"
-              @edit="openEditSub"
-              @add="openNewSub"
-            />
+            <SubscriptionsTable :items="subs" @edit="openEditSub" @add="openNewSub" />
           </template>
         </TabsContent>
       </Tabs>
@@ -464,8 +436,8 @@ const subsYearly = computed(() =>
       >
         <p>Hecho con Nuxt · Prisma · Tailwind · Vue</p>
         <p>
-          Datos almacenados en SQLite local · Exportable a Excel/Google Sheets
-          para BigLinux + OnlyOffice
+          Datos almacenados en SQLite local · Exportable a Excel/Google Sheets para BigLinux +
+          OnlyOffice
         </p>
       </div>
     </footer>

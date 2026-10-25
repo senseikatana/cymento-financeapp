@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from "~/utils/cn";
+import { cn } from '@/utils/cn';
 
 defineProps<{ class?: string }>();
 </script>
@@ -9,7 +9,7 @@ defineProps<{ class?: string }>();
     :class="
       cn(
         'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
-        $props.class,
+        $props.class
       )
     "
   >

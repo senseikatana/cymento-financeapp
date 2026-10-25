@@ -8,13 +8,16 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "format": "prettier --write .",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.mjs,.cjs,.vue .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepare": "husky install .husky",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
+    "@insforge/sdk": "^1.5.2",
     "@lucide/vue": "^1.61.0",
     "@prisma/client": "^6.11.1",
     "class-variance-authority": "^0.7.1",
@@ -27,9 +30,13 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^10.0.0",
     "@eslint/js": "^10.0.1",
     "@nuxtjs/tailwindcss": "^6.14.0",
+    "@types/eslint": "^9.6.1",
+    "@types/prettier": "^2.7.3",
     "eslint": "^10.13.0",
+    "eslint-plugin-format": "^2.0.1",
     "globals": "^17.13.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",

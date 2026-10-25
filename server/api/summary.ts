@@ -1,17 +1,19 @@
 // GET /api/summary — resumen financiero completo para el dashboard
+import { getInsforge } from '../utils/insforge';
+import { mapExpense, mapIncome, mapSettings, mapSubscription } from '../utils/mappers';
 
 // Helper: convertir frecuencia a equivalente mensual
 function monthlyAmount(amount: number, freq: string): number {
   switch (freq) {
-    case "mensual":
+    case 'mensual':
       return amount;
-    case "anual":
+    case 'anual':
       return amount / 12;
-    case "trimestral":
+    case 'trimestral':
       return amount / 3;
-    case "semestral":
+    case 'semestral':
       return amount / 6;
-    case "unico":
+    case 'unico':
       return 0; // los únicos no se cuentan como recurrentes
     default:
       return amount;
@@ -21,15 +23,15 @@ function monthlyAmount(amount: number, freq: string): number {
 // Helper: anualizar una cantidad según frecuencia
 function yearlyAmount(amount: number, freq: string): number {
   switch (freq) {
-    case "mensual":
+    case 'mensual':
       return amount * 12;
-    case "anual":
+    case 'anual':
       return amount;
-    case "trimestral":
+    case 'trimestral':
       return amount * 4;
-    case "semestral":
+    case 'semestral':
       return amount * 2;
-    case "unico":
+    case 'unico':
       return amount;
     default:
       return amount * 12;
@@ -38,31 +40,37 @@ function yearlyAmount(amount: number, freq: string): number {
 
 export default defineEventHandler(async () => {
   try {
-    const [incomes, expenses, subscriptions, settings] = await Promise.all([
-      db.income.findMany(),
-      db.expense.findMany(),
-      db.subscription.findMany({ include: { expenses: true } }),
-      db.settings.findUnique({ where: { id: "singleton" } }),
+    const [incomesRes, expensesRes, subscriptionsRes, settingsRes] = await Promise.all([
+      getInsforge().database.from('incomes').select(),
+      getInsforge().database.from('expenses').select(),
+      getInsforge().database.from('subscriptions').select(),
+      getInsforge().database.from('settings').select().eq('id', 'singleton').limit(1),
     ]);
 
+    const firstError =
+      incomesRes.error || expensesRes.error || subscriptionsRes.error || settingsRes.error;
+    if (firstError) {
+      throw createError({ statusCode: 500, statusMessage: firstError.message });
+    }
+
+    const incomes = (incomesRes.data ?? []).map(mapIncome);
+    const expenses = (expensesRes.data ?? []).map(mapExpense);
+    const subscriptions = (subscriptionsRes.data ?? []).map(mapSubscription);
+    const settings = settingsRes.data?.length ? mapSettings(settingsRes.data[0]) : null;
+
     // 1. Ingresos recurrentes mensuales
-    const activeIncomes = incomes.filter(
-      (i) => i.active && i.frequency !== "unico",
-    );
+    const activeIncomes = incomes.filter((i) => i.active && i.frequency !== 'unico');
     const totalIncomeMonthly = activeIncomes.reduce(
       (sum, i) => sum + monthlyAmount(i.amount, i.frequency),
-      0,
+      0
     );
 
     // 2. Ingresos únicos (paga extra, ahorros previos puntuales)
-    const uniqueIncomes = incomes.filter((i) => i.frequency === "unico");
-    const totalUniqueIncome = uniqueIncomes.reduce(
-      (sum, i) => sum + i.amount,
-      0,
-    );
+    const uniqueIncomes = incomes.filter((i) => i.active && i.frequency === 'unico');
+    const totalUniqueIncome = uniqueIncomes.reduce((sum, i) => sum + i.amount, 0);
 
     // 3. Gastos recurrentes por bucket
-    const recurringExpenses = expenses.filter((e) => e.frequency !== "unico");
+    const recurringExpenses = expenses.filter((e) => e.active && e.frequency !== 'unico');
     const bucketMonthly: Record<string, number> = {
       fijo: 0,
       extraordinario: 0,
@@ -74,7 +82,7 @@ export default defineEventHandler(async () => {
     }
 
     // 4. Gastos únicos por bucket (acumulado histórico)
-    const uniqueExpenses = expenses.filter((e) => e.frequency === "unico");
+    const uniqueExpenses = expenses.filter((e) => e.frequency === 'unico');
     const bucketUnique: Record<string, number> = {
       fijo: 0,
       extraordinario: 0,
@@ -88,25 +96,23 @@ export default defineEventHandler(async () => {
     const activeSubs = subscriptions.filter((s) => s.active);
     const subsMonthly = activeSubs.reduce(
       (sum, s) => sum + monthlyAmount(s.amount, s.billingCycle),
-      0,
+      0
     );
     const subsYearly = activeSubs.reduce(
       (sum, s) => sum + yearlyAmount(s.amount, s.billingCycle),
-      0,
+      0
     );
 
     // 6. Aplicar la regla 50/30/20 según base configurada
     const pctFixed = settings?.pctFixed ?? 50;
     const pctExtra = settings?.pctExtra ?? 30;
     const pctSavings = settings?.pctSavings ?? 20;
-    const ruleBase = settings?.ruleBase || "total";
+    const ruleBase = settings?.ruleBase || 'total';
 
     let baseForRule = totalIncomeMonthly;
-    if (ruleBase === "salario") {
-      const salario = activeIncomes.find((i) => i.type === "salario");
-      baseForRule = salario
-        ? monthlyAmount(salario.amount, salario.frequency)
-        : 0;
+    if (ruleBase === 'salario') {
+      const salaries = activeIncomes.filter((i) => i.type === 'salario');
+      baseForRule = salaries.reduce((sum, i) => sum + monthlyAmount(i.amount, i.frequency), 0);
     }
 
     const ruleTargets = {
@@ -116,22 +122,25 @@ export default defineEventHandler(async () => {
     };
 
     // 7. Estado real vs objetivo
-    const realFixed = bucketMonthly.fijo;
-    const realExtra = bucketMonthly.extraordinario;
-    const realSavings = bucketMonthly.ahorro;
+    const realFixed = bucketMonthly.fijo ?? 0;
+    const realExtra = bucketMonthly.extraordinario ?? 0;
+    const realSavings = bucketMonthly.ahorro ?? 0;
     const totalSpent = realFixed + realExtra + realSavings;
     const balance = totalIncomeMonthly - totalSpent;
 
     // 8. Desglose por categoría (mensual)
     const byCategory: Record<string, number> = {};
     for (const e of recurringExpenses) {
-      byCategory[e.category] =
-        (byCategory[e.category] || 0) + monthlyAmount(e.amount, e.frequency);
+      byCategory[e.category] = (byCategory[e.category] || 0) + monthlyAmount(e.amount, e.frequency);
     }
 
     // 9. Próximas renovaciones de suscripciones
     const upcomingRenewals = activeSubs
       .filter((s) => s.renewalDate)
+      .filter((s) => {
+        const days = Math.ceil((new Date(s.renewalDate!).getTime() - Date.now()) / 86400000);
+        return days >= 0;
+      })
       .map((s) => ({
         id: s.id,
         name: s.name,
@@ -139,8 +148,7 @@ export default defineEventHandler(async () => {
         billingCycle: s.billingCycle,
         renewalDate: s.renewalDate!,
         daysUntil: Math.ceil(
-          (new Date(s.renewalDate!).getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
+          (new Date(s.renewalDate!).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
         ),
       }))
       .sort((a, b) => a.daysUntil - b.daysUntil)
@@ -178,10 +186,10 @@ export default defineEventHandler(async () => {
       },
     };
   } catch (e) {
-    console.error("GET /api/summary", e);
+    console.error('GET /api/summary', e);
     throw createError({
       statusCode: 500,
-      statusMessage: "Error al calcular resumen",
+      statusMessage: 'Error al calcular resumen',
     });
   }
 });

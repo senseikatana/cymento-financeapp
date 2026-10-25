@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { CheckCircle2, XCircle, Info } from "@lucide/vue";
-import { useToast } from "~/composables/useToast";
+import { CheckCircle2, Info, XCircle } from '@lucide/vue';
+import { useToast } from '@/composables/useToast';
 
 const { toasts, dismiss } = useToast();
 
 function variantClasses(variant: string) {
   switch (variant) {
-    case "success":
-      return "border-emerald-500/40";
-    case "error":
-      return "border-rose-500/40";
+    case 'success':
+      return 'border-emerald-500/40';
+    case 'error':
+      return 'border-rose-500/40';
     default:
-      return "border-border";
+      return 'border-border';
   }
 }
 
 function iconFor(variant: string) {
   switch (variant) {
-    case "success":
+    case 'success':
       return CheckCircle2;
-    case "error":
+    case 'error':
       return XCircle;
     default:
       return Info;
@@ -28,9 +28,7 @@ function iconFor(variant: string) {
 </script>
 
 <template>
-  <div
-    class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]"
-  >
+  <div class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
     <TransitionGroup name="toast">
       <div
         v-for="t in toasts"
@@ -50,7 +48,9 @@ function iconFor(variant: string) {
           "
         />
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium">{{ t.title }}</p>
+          <p class="text-sm font-medium">
+            {{ t.title }}
+          </p>
           <p v-if="t.description" class="text-xs text-muted-foreground mt-0.5">
             {{ t.description }}
           </p>
@@ -68,11 +68,7 @@ function iconFor(variant: string) {
             stroke="currentColor"
             stroke-width="2"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>

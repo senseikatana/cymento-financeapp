@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Pencil, Trash2, Plus } from "@lucide/vue";
-import { useFinances, type Income } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
+import type { Income } from '@/composables/useFinances';
+import { Pencil, Plus, Trash2 } from '@lucide/vue';
+import { ref } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
 import {
-  formatEUR,
   formatDate,
+  formatEUR,
   FREQUENCY_LABELS,
   INCOME_TYPE_LABELS,
   toMonthly,
-} from "~/utils/format";
+} from '@/utils/format';
 
 const props = defineProps<{
   items: Income[];
@@ -18,8 +19,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", item: Income): void;
-  (e: "add"): void;
+  (e: 'edit', item: Income): void;
+  (e: 'add'): void;
 }>();
 
 const { deleteIncome } = useFinances();
@@ -31,9 +32,9 @@ async function confirm() {
   if (!toDelete.value) return;
   try {
     await deleteIncome(toDelete.value.id);
-    toast.success("Ingreso eliminado");
+    toast.success('Ingreso eliminado');
   } catch (e: any) {
-    toast.error(e?.data?.statusMessage || e?.message || "Error al eliminar");
+    toast.error(e?.data?.statusMessage || e?.message || 'Error al eliminar');
   } finally {
     toDelete.value = null;
   }
@@ -54,19 +55,13 @@ async function confirm() {
           <table class="w-full caption-bottom text-sm">
             <thead class="[&_tr]:border-b">
               <tr class="sticky top-0 bg-muted/50 backdrop-blur z-10 border-b">
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Fuente
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Tipo
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Frec.
                 </th>
                 <th
@@ -79,14 +74,10 @@ async function confirm() {
                 >
                   Importe
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Fecha
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Estado
                 </th>
                 <th
@@ -100,11 +91,10 @@ async function confirm() {
               <tr v-for="row in items" :key="row.id" class="border-b">
                 <td class="p-2 align-middle">
                   <div class="min-w-0">
-                    <p class="font-medium truncate">{{ row.source }}</p>
-                    <p
-                      v-if="row.notes"
-                      class="text-xs text-muted-foreground truncate"
-                    >
+                    <p class="font-medium truncate">
+                      {{ row.source }}
+                    </p>
+                    <p v-if="row.notes" class="text-xs text-muted-foreground truncate">
                       {{ row.notes }}
                     </p>
                   </div>
@@ -124,15 +114,11 @@ async function confirm() {
                 <td class="p-2 align-middle text-right tabular-nums">
                   {{ formatEUR(toMonthly(row.amount, row.frequency)) }}
                 </td>
-                <td
-                  class="p-2 align-middle text-right font-medium tabular-nums"
-                >
+                <td class="p-2 align-middle text-right font-medium tabular-nums">
                   {{ formatEUR(row.amount) }}
                 </td>
                 <td class="p-2 align-middle">
-                  <span class="text-xs text-muted-foreground">{{
-                    formatDate(row.date)
-                  }}</span>
+                  <span class="text-xs text-muted-foreground">{{ formatDate(row.date) }}</span>
                 </td>
                 <td class="p-2 align-middle">
                   <span
@@ -143,7 +129,7 @@ async function confirm() {
                         : 'bg-destructive text-destructive-foreground'
                     "
                   >
-                    {{ row.active ? "Activo" : "Inactivo" }}
+                    {{ row.active ? 'Activo' : 'Inactivo' }}
                   </span>
                 </td>
                 <td class="p-2 align-middle text-right">
@@ -152,9 +138,7 @@ async function confirm() {
                       type="button"
                       class="inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-accent hover:text-accent-foreground"
                       aria-label="Editar"
-                      @click="
-                        props.onEdit ? props.onEdit(row) : emit('edit', row)
-                      "
+                      @click="props.onEdit ? props.onEdit(row) : emit('edit', row)"
                     >
                       <Pencil class="h-3.5 w-3.5" />
                     </button>
@@ -186,10 +170,7 @@ async function confirm() {
 
     <!-- Confirmación de borrado -->
     <Teleport to="body">
-      <div
-        v-if="toDelete"
-        class="fixed inset-0 z-50 flex items-center justify-center"
-      >
+      <div v-if="toDelete" class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="fixed inset-0 bg-black/50" @click="toDelete = null" />
         <div
           class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg"
@@ -200,9 +181,7 @@ async function confirm() {
               Se eliminará "{{ toDelete.source }}" de forma permanente.
             </p>
           </div>
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
             <button
               type="button"
               class="inline-flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm font-medium"

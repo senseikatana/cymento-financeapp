@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
-import { Loader2 } from "@lucide/vue";
-import { useFinances } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
+import { Loader2 } from '@lucide/vue';
+import { computed, reactive, watch } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
 
 const props = defineProps<{ modelValue: boolean }>();
-const emit = defineEmits<{ (e: "update:modelValue", value: boolean): void }>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: boolean): void }>();
 
 const { settings, loadingSettings, updateSettings } = useFinances();
 const { toast } = useToast();
 
 const RULE_BASES = [
-  { value: "total", label: "Total ingresos mensuales" },
-  { value: "salario", label: "Solo salario" },
-  { value: "custom", label: "Personalizado (próximamente)" },
+  { value: 'total', label: 'Total ingresos mensuales' },
+  { value: 'salario', label: 'Solo salario' },
+  { value: 'custom', label: 'Personalizado (próximamente)' },
 ];
 
 const form = reactive({
   pctFixed: 50,
   pctExtra: 30,
   pctSavings: 20,
-  ruleBase: "total",
+  ruleBase: 'total',
 });
 
 watch(
@@ -30,41 +30,40 @@ watch(
     form.pctFixed = settings.value?.pctFixed ?? 50;
     form.pctExtra = settings.value?.pctExtra ?? 30;
     form.pctSavings = settings.value?.pctSavings ?? 20;
-    form.ruleBase = settings.value?.ruleBase ?? "total";
+    form.ruleBase = settings.value?.ruleBase ?? 'total';
   },
-  { immediate: true },
+  { immediate: true }
 );
 
-const total = computed(() => form.pctFixed + form.pctExtra + form.pctSavings);
+const total = computed(
+  () => Number(form.pctFixed) + Number(form.pctExtra) + Number(form.pctSavings)
+);
 const isValid = computed(() => Math.abs(total.value - 100) < 0.01);
 
 async function handleSubmit() {
   if (!isValid.value) {
-    toast.error(
-      `Los porcentajes deben sumar 100 (ahora suman ${total.value.toFixed(2)})`,
-    );
+    toast.error(`Los porcentajes deben sumar 100 (ahora suman ${total.value.toFixed(2)})`);
     return;
   }
   try {
-    await updateSettings({ ...form });
-    toast.success("Ajustes guardados");
-    emit("update:modelValue", false);
+    await updateSettings({
+      pctFixed: Number(form.pctFixed),
+      pctExtra: Number(form.pctExtra),
+      pctSavings: Number(form.pctSavings),
+      ruleBase: form.ruleBase,
+    });
+    toast.success('Ajustes guardados');
+    emit('update:modelValue', false);
   } catch (err: any) {
-    toast.error(err?.data?.statusMessage || err?.message || "Error al guardar");
+    toast.error(err?.data?.statusMessage || err?.message || 'Error al guardar');
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div
-        class="fixed inset-0 bg-black/50"
-        @click="emit('update:modelValue', false)"
-      />
+    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="fixed inset-0 bg-black/50" @click="emit('update:modelValue', false)" />
       <div
         class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg sm:max-w-lg"
       >
@@ -81,26 +80,18 @@ async function handleSubmit() {
             stroke="currentColor"
             stroke-width="2"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         <div class="flex flex-col space-y-1.5">
           <h2 class="text-lg font-semibold">Ajustes de la regla financiera</h2>
           <p class="text-sm text-muted-foreground">
-            Configura los porcentajes de la regla 50/30/20 y sobre qué base se
-            calculan.
+            Configura los porcentajes de la regla 50/30/20 y sobre qué base se calculan.
           </p>
         </div>
 
-        <div
-          v-if="loadingSettings"
-          class="flex items-center justify-center py-8"
-        >
+        <div v-if="loadingSettings" class="flex items-center justify-center py-8">
           <Loader2 class="h-5 w-5 animate-spin" />
         </div>
 
@@ -118,7 +109,7 @@ async function handleSubmit() {
             >
               {{ total.toFixed(2) }}%
             </strong>
-            {{ isValid ? "✓" : "(debe sumar 100%)" }}
+            {{ isValid ? '✓' : '(debe sumar 100%)' }}
           </div>
 
           <div class="grid grid-cols-3 gap-3">
@@ -134,9 +125,7 @@ async function handleSubmit() {
               />
             </div>
             <div class="space-y-1.5">
-              <label for="set-extra" class="text-sm font-medium"
-                >Extras %</label
-              >
+              <label for="set-extra" class="text-sm font-medium">Extras %</label>
               <Input
                 id="set-extra"
                 v-model.number="form.pctExtra"
@@ -160,30 +149,18 @@ async function handleSubmit() {
           </div>
 
           <div class="space-y-1.5">
-            <label for="set-base" class="text-sm font-medium"
-              >Aplicar regla sobre</label
-            >
-            <Select
-              v-model="form.ruleBase"
-              :options="RULE_BASES"
-              id="set-base"
-            />
+            <label for="set-base" class="text-sm font-medium">Aplicar regla sobre</label>
+            <Select id="set-base" v-model="form.ruleBase" :options="RULE_BASES" />
             <p class="text-xs text-muted-foreground">
-              Si seleccionas "solo salario", los objetivos se calculan
-              únicamente sobre tu nómina.
+              Si seleccionas "solo salario", los objetivos se calculan únicamente sobre tu nómina.
             </p>
           </div>
 
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
-            <Button
-              variant="outline"
-              type="button"
-              @click="emit('update:modelValue', false)"
-              >Cancelar</Button
-            >
-            <Button type="submit" :disabled="!isValid">Guardar</Button>
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <Button variant="outline" type="button" @click="emit('update:modelValue', false)">
+              Cancelar
+            </Button>
+            <Button type="submit" :disabled="!isValid"> Guardar </Button>
           </div>
         </form>
       </div>

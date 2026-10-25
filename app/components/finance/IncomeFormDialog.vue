@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
-import { useFinances, type Income } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
-import {
-  INCOME_TYPE_LABELS,
-  FREQUENCY_LABELS,
-  formatDateInput,
-} from "~/utils/format";
+import type { Income } from '@/composables/useFinances';
+import { reactive, ref, watch } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
+import { formatDateInput, FREQUENCY_LABELS, INCOME_TYPE_LABELS } from '@/utils/format';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -14,55 +11,53 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: boolean): void;
+  (e: 'update:modelValue', value: boolean): void;
 }>();
 
 const { createIncome, updateIncome } = useFinances();
 const { toast } = useToast();
 
-const typeOptions = Object.entries(INCOME_TYPE_LABELS).map(
-  ([value, label]) => ({ value, label }),
-);
+const typeOptions = Object.entries(INCOME_TYPE_LABELS).map(([value, label]) => ({ value, label }));
 const freqOptions = Object.entries(FREQUENCY_LABELS).map(([value, label]) => ({
   value,
   label,
 }));
 
 const form = reactive({
-  type: "salario",
-  source: "",
-  amount: "",
-  frequency: "mensual",
+  type: 'salario',
+  source: '',
+  amount: '',
+  frequency: 'mensual',
   date: formatDateInput(new Date()),
   active: true,
-  notes: "",
-  category: "",
+  notes: '',
+  category: '',
 });
 
-const saving = computed(() => false);
+const saving = ref(false);
 
 watch(
   () => [props.modelValue, props.editing?.id],
   () => {
     if (!props.modelValue) return;
     const e = props.editing;
-    form.type = e?.type ?? "salario";
-    form.source = e?.source ?? "";
-    form.amount = e ? String(e.amount) : "";
-    form.frequency = e?.frequency ?? "mensual";
+    form.type = e?.type ?? 'salario';
+    form.source = e?.source ?? '';
+    form.amount = e ? String(e.amount) : '';
+    form.frequency = e?.frequency ?? 'mensual';
     form.date = e ? formatDateInput(e.date) : formatDateInput(new Date());
     form.active = e?.active ?? true;
-    form.notes = e?.notes ?? "";
-    form.category = e?.category ?? "";
+    form.notes = e?.notes ?? '';
+    form.category = e?.category ?? '';
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const isEditing = computed(() => !!props.editing);
 
 async function handleSubmit() {
   if (!form.source || !form.amount) {
-    toast.error("Faltan campos obligatorios");
+    toast.error('Faltan campos obligatorios');
     return;
   }
   const payload = {
@@ -75,31 +70,28 @@ async function handleSubmit() {
     notes: form.notes || undefined,
     category: form.category || undefined,
   };
+  saving.value = true;
   try {
     if (props.editing) {
       await updateIncome({ id: props.editing.id, ...payload });
-      toast.success("Ingreso actualizado");
+      toast.success('Ingreso actualizado');
     } else {
       await createIncome(payload);
-      toast.success("Ingreso creado");
+      toast.success('Ingreso creado');
     }
-    emit("update:modelValue", false);
+    emit('update:modelValue', false);
   } catch (err: any) {
-    toast.error(err?.data?.statusMessage || err?.message || "Error al guardar");
+    toast.error(err?.data?.statusMessage || err?.message || 'Error al guardar');
+  } finally {
+    saving.value = false;
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div
-        class="fixed inset-0 bg-black/50"
-        @click="emit('update:modelValue', false)"
-      />
+    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="fixed inset-0 bg-black/50" @click="emit('update:modelValue', false)" />
       <div
         class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg sm:max-w-lg"
       >
@@ -116,21 +108,17 @@ async function handleSubmit() {
             stroke="currentColor"
             stroke-width="2"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         <div class="flex flex-col space-y-1.5">
           <h2 class="text-lg font-semibold">
-            {{ isEditing ? "Editar ingreso" : "Nuevo ingreso" }}
+            {{ isEditing ? 'Editar ingreso' : 'Nuevo ingreso' }}
           </h2>
           <p class="text-sm text-muted-foreground">
-            Registra ingresos recurrentes (nómina, subsidio) o puntuales (paga
-            extra, ahorros previos).
+            Registra ingresos recurrentes (nómina, subsidio) o puntuales (paga extra, ahorros
+            previos).
           </p>
         </div>
 
@@ -138,28 +126,16 @@ async function handleSubmit() {
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label for="inc-type" class="text-sm font-medium">Tipo</label>
-              <Select
-                v-model="form.type"
-                :options="typeOptions"
-                id="inc-type"
-              />
+              <Select id="inc-type" v-model="form.type" :options="typeOptions" />
             </div>
             <div class="space-y-1.5">
-              <label for="inc-freq" class="text-sm font-medium"
-                >Frecuencia</label
-              >
-              <Select
-                v-model="form.frequency"
-                :options="freqOptions"
-                id="inc-freq"
-              />
+              <label for="inc-freq" class="text-sm font-medium">Frecuencia</label>
+              <Select id="inc-freq" v-model="form.frequency" :options="freqOptions" />
             </div>
           </div>
 
           <div class="space-y-1.5">
-            <label for="inc-source" class="text-sm font-medium"
-              >Fuente / descripción *</label
-            >
+            <label for="inc-source" class="text-sm font-medium">Fuente / descripción *</label>
             <Input
               id="inc-source"
               v-model="form.source"
@@ -170,9 +146,7 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
-              <label for="inc-amount" class="text-sm font-medium"
-                >Importe € *</label
-              >
+              <label for="inc-amount" class="text-sm font-medium">Importe € *</label>
               <Input
                 id="inc-amount"
                 v-model="form.amount"
@@ -190,9 +164,7 @@ async function handleSubmit() {
           </div>
 
           <div class="space-y-1.5">
-            <label for="inc-category" class="text-sm font-medium"
-              >Categoría</label
-            >
+            <label for="inc-category" class="text-sm font-medium">Categoría</label>
             <Input
               id="inc-category"
               v-model="form.category"
@@ -201,7 +173,7 @@ async function handleSubmit() {
           </div>
 
           <div class="flex items-center gap-2">
-            <Switch v-model="form.active" id="inc-active" />
+            <Switch id="inc-active" v-model="form.active" />
             <label for="inc-active" class="text-sm font-medium"
               >Activo (cuenta en los totales mensuales)</label
             >
@@ -217,17 +189,12 @@ async function handleSubmit() {
             />
           </div>
 
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
-            <Button
-              variant="outline"
-              type="button"
-              @click="emit('update:modelValue', false)"
-              >Cancelar</Button
-            >
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <Button variant="outline" type="button" @click="emit('update:modelValue', false)">
+              Cancelar
+            </Button>
             <Button type="submit" :disabled="saving">
-              {{ isEditing ? "Guardar cambios" : "Crear ingreso" }}
+              {{ isEditing ? 'Guardar cambios' : 'Crear ingreso' }}
             </Button>
           </div>
         </form>

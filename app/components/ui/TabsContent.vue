@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, inject } from "vue";
-import { cn } from "~/utils/cn";
-import { TABS_CONTEXT_KEY } from "~/composables/useTabs";
+import { computed, inject } from 'vue';
+import { TABS_CONTEXT_KEY } from '@/composables/useTabs';
+import { cn } from '@/utils/cn';
 
 const props = defineProps<{ value: string; class?: string }>();
 
@@ -17,7 +17,7 @@ const isActive = computed(() => ctx?.activeTab.value === props.value);
     :class="
       cn(
         'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        $props.class,
+        $props.class
       )
     "
   >

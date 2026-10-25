@@ -1,0 +1,14 @@
+node_modules
+.nuxt
+.output
+dist
+coverage
+db/*.db
+db/*.db-journal
+prisma/migrations
+.insforge
+.env
+.env.*
+bun.lock
+bun.lockb
+*.xlsx

@@ -27,13 +27,13 @@ Abre [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Comando | Descripción |
-|---------|-------------|
-| `bun run dev` | Servidor de desarrollo |
-| `bun run build` | Build de producción |
-| `bun run start` | Arranca el build standalone |
-| `bun run db:push` | Sincroniza el esquema Prisma |
-| `bun run db:generate` | Genera el cliente Prisma |
+| Comando               | Descripción                  |
+| --------------------- | ---------------------------- |
+| `bun run dev`         | Servidor de desarrollo       |
+| `bun run build`       | Build de producción          |
+| `bun run start`       | Arranca el build standalone  |
+| `bun run db:push`     | Sincroniza el esquema Prisma |
+| `bun run db:generate` | Genera el cliente Prisma     |
 
 ## Datos
 

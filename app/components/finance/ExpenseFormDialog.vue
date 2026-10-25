@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
-import { useFinances, type Expense } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
-import { FREQUENCY_LABELS, formatDateInput } from "~/utils/format";
+import type { Expense } from '@/composables/useFinances';
+import { computed, reactive, watch } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
+import { formatDateInput, FREQUENCY_LABELS } from '@/utils/format';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -10,31 +11,31 @@ const props = defineProps<{
   defaultBucket?: string;
 }>();
 
-const emit = defineEmits<{ (e: "update:modelValue", value: boolean): void }>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: boolean): void }>();
 
 const { createExpense, updateExpense } = useFinances();
 const { toast } = useToast();
 
 const BUCKETS = [
-  { value: "fijo", label: "Fijos (50%)" },
-  { value: "extraordinario", label: "Extraordinarios (30%)" },
-  { value: "ahorro", label: "Ahorro (20%)" },
+  { value: 'fijo', label: 'Fijos (50%)' },
+  { value: 'extraordinario', label: 'Extraordinarios (30%)' },
+  { value: 'ahorro', label: 'Ahorro (20%)' },
 ];
 
 const CATEGORIES = [
-  "vivienda",
-  "comida",
-  "transporte",
-  "comunicaciones",
-  "salud",
-  "ocio",
-  "suscripcion",
-  "fondo_estabilidad",
-  "educacion",
-  "ropa",
-  "regalos",
-  "imprevistos",
-  "general",
+  'vivienda',
+  'comida',
+  'transporte',
+  'comunicaciones',
+  'salud',
+  'ocio',
+  'suscripcion',
+  'fondo_estabilidad',
+  'educacion',
+  'ropa',
+  'regalos',
+  'imprevistos',
+  'general',
 ];
 
 const freqOptions = Object.entries(FREQUENCY_LABELS).map(([value, label]) => ({
@@ -44,13 +45,13 @@ const freqOptions = Object.entries(FREQUENCY_LABELS).map(([value, label]) => ({
 const catOptions = CATEGORIES.map((c) => ({ value: c, label: c }));
 
 const form = reactive({
-  bucket: "fijo",
-  category: "general",
-  description: "",
-  amount: "",
-  frequency: "mensual",
+  bucket: 'fijo',
+  category: 'general',
+  description: '',
+  amount: '',
+  frequency: 'mensual',
   date: formatDateInput(new Date()),
-  notes: "",
+  notes: '',
 });
 
 watch(
@@ -58,22 +59,22 @@ watch(
   () => {
     if (!props.modelValue) return;
     const e = props.editing;
-    form.bucket = e?.bucket ?? props.defaultBucket ?? "fijo";
-    form.category = e?.category ?? "general";
-    form.description = e?.description ?? "";
-    form.amount = e ? String(e.amount) : "";
-    form.frequency = e?.frequency ?? "mensual";
+    form.bucket = e?.bucket ?? props.defaultBucket ?? 'fijo';
+    form.category = e?.category ?? 'general';
+    form.description = e?.description ?? '';
+    form.amount = e ? String(e.amount) : '';
+    form.frequency = e?.frequency ?? 'mensual';
     form.date = e ? formatDateInput(e.date) : formatDateInput(new Date());
-    form.notes = e?.notes ?? "";
+    form.notes = e?.notes ?? '';
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const isEditing = computed(() => !!props.editing);
 
 async function handleSubmit() {
   if (!form.description || !form.amount) {
-    toast.error("Faltan campos obligatorios");
+    toast.error('Faltan campos obligatorios');
     return;
   }
   const payload = {
@@ -88,28 +89,22 @@ async function handleSubmit() {
   try {
     if (props.editing) {
       await updateExpense({ id: props.editing.id, ...payload });
-      toast.success("Gasto actualizado");
+      toast.success('Gasto actualizado');
     } else {
       await createExpense(payload);
-      toast.success("Gasto creado");
+      toast.success('Gasto creado');
     }
-    emit("update:modelValue", false);
+    emit('update:modelValue', false);
   } catch (err: any) {
-    toast.error(err?.data?.statusMessage || err?.message || "Error al guardar");
+    toast.error(err?.data?.statusMessage || err?.message || 'Error al guardar');
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div
-        class="fixed inset-0 bg-black/50"
-        @click="emit('update:modelValue', false)"
-      />
+    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="fixed inset-0 bg-black/50" @click="emit('update:modelValue', false)" />
       <div
         class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg sm:max-w-lg"
       >
@@ -126,17 +121,13 @@ async function handleSubmit() {
             stroke="currentColor"
             stroke-width="2"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         <div class="flex flex-col space-y-1.5">
           <h2 class="text-lg font-semibold">
-            {{ isEditing ? "Editar gasto" : "Nuevo gasto" }}
+            {{ isEditing ? 'Editar gasto' : 'Nuevo gasto' }}
           </h2>
           <p class="text-sm text-muted-foreground">
             Clasifica el gasto en uno de los tres buckets de la regla 50/30/20.
@@ -147,28 +138,16 @@ async function handleSubmit() {
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label for="exp-bucket" class="text-sm font-medium">Bucket</label>
-              <Select
-                v-model="form.bucket"
-                :options="BUCKETS"
-                id="exp-bucket"
-              />
+              <Select id="exp-bucket" v-model="form.bucket" :options="BUCKETS" />
             </div>
             <div class="space-y-1.5">
-              <label for="exp-freq" class="text-sm font-medium"
-                >Frecuencia</label
-              >
-              <Select
-                v-model="form.frequency"
-                :options="freqOptions"
-                id="exp-freq"
-              />
+              <label for="exp-freq" class="text-sm font-medium">Frecuencia</label>
+              <Select id="exp-freq" v-model="form.frequency" :options="freqOptions" />
             </div>
           </div>
 
           <div class="space-y-1.5">
-            <label for="exp-desc" class="text-sm font-medium"
-              >Descripción *</label
-            >
+            <label for="exp-desc" class="text-sm font-medium">Descripción *</label>
             <Input
               id="exp-desc"
               v-model="form.description"
@@ -179,9 +158,7 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
-              <label for="exp-amount" class="text-sm font-medium"
-                >Importe € *</label
-              >
+              <label for="exp-amount" class="text-sm font-medium">Importe € *</label>
               <Input
                 id="exp-amount"
                 v-model="form.amount"
@@ -200,11 +177,7 @@ async function handleSubmit() {
 
           <div class="space-y-1.5">
             <label for="exp-cat" class="text-sm font-medium">Categoría</label>
-            <Select
-              v-model="form.category"
-              :options="catOptions"
-              id="exp-cat"
-            />
+            <Select id="exp-cat" v-model="form.category" :options="catOptions" />
           </div>
 
           <div class="space-y-1.5">
@@ -217,18 +190,13 @@ async function handleSubmit() {
             />
           </div>
 
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
-            <Button
-              variant="outline"
-              type="button"
-              @click="emit('update:modelValue', false)"
-              >Cancelar</Button
-            >
-            <Button type="submit">{{
-              isEditing ? "Guardar cambios" : "Crear gasto"
-            }}</Button>
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <Button variant="outline" type="button" @click="emit('update:modelValue', false)">
+              Cancelar
+            </Button>
+            <Button type="submit">
+              {{ isEditing ? 'Guardar cambios' : 'Crear gasto' }}
+            </Button>
           </div>
         </form>
       </div>

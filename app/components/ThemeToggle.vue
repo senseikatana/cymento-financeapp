@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Moon, Sun } from "@lucide/vue";
-import { useTheme } from "~/composables/useTheme";
+import { Moon, Sun } from '@lucide/vue';
+import { useTheme } from '@/composables/useTheme';
 
-const { theme, toggleTheme } = useTheme();
+const { toggleTheme } = useTheme();
 </script>
 
 <template>
@@ -13,11 +13,7 @@ const { theme, toggleTheme } = useTheme();
     title="Cambiar tema claro/oscuro"
     @click="toggleTheme"
   >
-    <Sun
-      class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-    />
-    <Moon
-      class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-    />
+    <Sun class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+    <Moon class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
   </button>
 </template>

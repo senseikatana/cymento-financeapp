@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { cn } from "~/utils/cn";
+import { cn } from '@/utils/cn';
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     value?: number;
     max?: number;
     class?: string;
     style?: Record<string, string>;
   }>(),
-  { value: 0, max: 100 },
+  { value: 0, max: 100 }
 );
 </script>
 
@@ -17,12 +17,7 @@ const props = withDefaults(
     role="progressbar"
     :aria-valuenow="value"
     :aria-valuemax="max"
-    :class="
-      cn(
-        'relative h-2 w-full overflow-hidden rounded-full bg-primary/20',
-        $props.class,
-      )
-    "
+    :class="cn('relative h-2 w-full overflow-hidden rounded-full bg-primary/20', $props.class)"
     :style="style"
   >
     <div

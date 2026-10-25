@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Pencil, Trash2, Plus } from "@lucide/vue";
-import { useFinances, type Subscription } from "~/composables/useFinances";
-import { useToast } from "~/composables/useToast";
-import {
-  formatEUR,
-  formatDate,
-  FREQUENCY_LABELS,
-  BUCKET_SHORT,
-  toMonthly,
-} from "~/utils/format";
+import type { Subscription } from '@/composables/useFinances';
+import { Pencil, Plus, Trash2 } from '@lucide/vue';
+import { ref } from 'vue';
+import { useFinances } from '@/composables/useFinances';
+import { useToast } from '@/composables/useToast';
+import { BUCKET_SHORT, formatDate, formatEUR, FREQUENCY_LABELS, toMonthly } from '@/utils/format';
 
 const props = defineProps<{
   items: Subscription[];
@@ -18,8 +13,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "edit", item: Subscription): void;
-  (e: "add"): void;
+  (e: 'edit', item: Subscription): void;
+  (e: 'add'): void;
 }>();
 
 const { deleteSubscription } = useFinances();
@@ -28,18 +23,16 @@ const { toast } = useToast();
 const toDelete = ref<Subscription | null>(null);
 
 function daysUntil(renewalDate: string) {
-  return Math.ceil(
-    (new Date(renewalDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-  );
+  return Math.ceil((new Date(renewalDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
 async function confirm() {
   if (!toDelete.value) return;
   try {
     await deleteSubscription(toDelete.value.id);
-    toast.success("Suscripción eliminada");
+    toast.success('Suscripción eliminada');
   } catch (e: any) {
-    toast.error(e?.data?.statusMessage || e?.message || "Error al eliminar");
+    toast.error(e?.data?.statusMessage || e?.message || 'Error al eliminar');
   } finally {
     toDelete.value = null;
   }
@@ -60,14 +53,10 @@ async function confirm() {
           <table class="w-full caption-bottom text-sm">
             <thead class="[&_tr]:border-b">
               <tr class="sticky top-0 bg-muted/50 backdrop-blur z-10 border-b">
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Nombre
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Ciclo
                 </th>
                 <th
@@ -80,19 +69,13 @@ async function confirm() {
                 >
                   Mensual eq.
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Próx. renovación
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Bucket
                 </th>
-                <th
-                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground"
-                >
+                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Estado
                 </th>
                 <th
@@ -106,11 +89,10 @@ async function confirm() {
               <tr v-for="row in items" :key="row.id" class="border-b">
                 <td class="p-2 align-middle">
                   <div class="min-w-0">
-                    <p class="font-medium truncate">{{ row.name }}</p>
-                    <p
-                      v-if="row.provider"
-                      class="text-xs text-muted-foreground truncate"
-                    >
+                    <p class="font-medium truncate">
+                      {{ row.name }}
+                    </p>
+                    <p v-if="row.provider" class="text-xs text-muted-foreground truncate">
                       {{ row.provider }}
                     </p>
                   </div>
@@ -122,9 +104,7 @@ async function confirm() {
                     {{ FREQUENCY_LABELS[row.billingCycle] || row.billingCycle }}
                   </span>
                 </td>
-                <td
-                  class="p-2 align-middle text-right font-medium tabular-nums"
-                >
+                <td class="p-2 align-middle text-right font-medium tabular-nums">
                   {{ formatEUR(row.amount) }}
                 </td>
                 <td class="p-2 align-middle text-right tabular-nums">
@@ -169,7 +149,7 @@ async function confirm() {
                         : 'bg-destructive text-destructive-foreground'
                     "
                   >
-                    {{ row.active ? "Activa" : "Cancelada" }}
+                    {{ row.active ? 'Activa' : 'Cancelada' }}
                   </span>
                 </td>
                 <td class="p-2 align-middle text-right">
@@ -178,9 +158,7 @@ async function confirm() {
                       type="button"
                       class="inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-accent hover:text-accent-foreground"
                       aria-label="Editar"
-                      @click="
-                        props.onEdit ? props.onEdit(row) : emit('edit', row)
-                      "
+                      @click="props.onEdit ? props.onEdit(row) : emit('edit', row)"
                     >
                       <Pencil class="h-3.5 w-3.5" />
                     </button>
@@ -211,10 +189,7 @@ async function confirm() {
     </button>
 
     <Teleport to="body">
-      <div
-        v-if="toDelete"
-        class="fixed inset-0 z-50 flex items-center justify-center"
-      >
+      <div v-if="toDelete" class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="fixed inset-0 bg-black/50" @click="toDelete = null" />
         <div
           class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg"
@@ -222,13 +197,11 @@ async function confirm() {
           <div class="flex flex-col space-y-2">
             <h2 class="text-lg font-semibold">¿Eliminar suscripción?</h2>
             <p class="text-sm text-muted-foreground">
-              Se eliminará "{{ toDelete.name }}". Los gastos ya generados se
-              mantendrán pero sin vinculación.
+              Se eliminará "{{ toDelete.name }}". Los gastos ya generados se mantendrán pero sin
+              vinculación.
             </p>
           </div>
-          <div
-            class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
-          >
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
             <button
               type="button"
               class="inline-flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm font-medium"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { cn } from "~/utils/cn";
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { cn } from '@/utils/cn';
 
 interface SelectOption {
   value: string;
@@ -15,10 +15,10 @@ const props = withDefaults(
     id?: string;
     class?: string;
   }>(),
-  { modelValue: "", options: () => [], placeholder: "Seleccionar…", class: "" },
+  { modelValue: '', options: () => [], placeholder: 'Seleccionar…', class: '' }
 );
 
-const emit = defineEmits<{ (e: "update:modelValue", value: string): void }>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>();
 
 const open = ref(false);
 const rootRef = ref<HTMLElement | null>(null);
@@ -29,7 +29,7 @@ const selectedLabel = computed(() => {
 });
 
 function select(value: string) {
-  emit("update:modelValue", value);
+  emit('update:modelValue', value);
   open.value = false;
 }
 
@@ -43,8 +43,8 @@ function onDocumentClick(ev: MouseEvent) {
   }
 }
 
-onMounted(() => document.addEventListener("click", onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
+onMounted(() => document.addEventListener('click', onDocumentClick));
+onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
 </script>
 
 <template>
@@ -63,11 +63,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
         stroke="currentColor"
         stroke-width="2"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-        />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
       </svg>
     </button>
 
@@ -83,7 +79,7 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
         :class="
           cn(
             'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground',
-            opt.value === modelValue && 'bg-accent text-accent-foreground',
+            opt.value === modelValue && 'bg-accent text-accent-foreground'
           )
         "
         @click="select(opt.value)"
