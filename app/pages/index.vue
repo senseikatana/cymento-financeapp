@@ -110,26 +110,31 @@ const subsYearly = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-muted/30">
+  <div class="flex min-h-dvh flex-col bg-muted/30">
     <!-- ===== Header ===== -->
     <header
       class="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <div class="rounded-lg bg-gradient-to-br from-emerald-500 to-violet-600 p-1.5 text-white">
+      <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-3 sm:gap-3 sm:px-6 lg:px-8">
+        <div class="flex min-w-0 items-center gap-2">
+          <div
+            class="shrink-0 rounded-lg bg-gradient-to-br from-emerald-500 to-violet-600 p-1.5 text-white"
+          >
             <Wallet class="h-5 w-5" />
           </div>
-          <div>
-            <h1 class="text-base sm:text-lg font-bold leading-none">Finanzas Personales</h1>
+          <div class="min-w-0">
+            <h1 class="truncate text-base sm:text-lg font-bold leading-none">
+              Finanzas Personales
+            </h1>
             <p class="text-xs text-muted-foreground hidden sm:block">
               Regla 50/30/20 · Sincronizable con Excel / Google Sheets
             </p>
           </div>
         </div>
-        <div class="ml-auto flex items-center gap-2">
-          <Button variant="ghost" size="sm" @click="settingsDialog = true">
-            <SettingsIcon class="h-4 w-4 mr-2" /> Ajustes
+        <div class="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+          <Button variant="ghost" size="sm" aria-label="Ajustes" @click="settingsDialog = true">
+            <SettingsIcon class="h-4 w-4 sm:mr-2" />
+            <span class="hidden sm:inline">Ajustes</span>
           </Button>
           <ThemeToggle />
         </div>
@@ -140,8 +145,8 @@ const subsYearly = computed(() =>
     <main class="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-6">
       <!-- Sync toolbar + DateFilter -->
       <div class="rounded-xl border bg-card p-4">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <div class="flex-1">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <div class="min-w-0 flex-1">
             <div class="flex flex-col gap-3">
               <div>
                 <h2 class="text-sm font-semibold flex items-center gap-2">
@@ -156,7 +161,7 @@ const subsYearly = computed(() =>
               <SyncToolbar />
             </div>
           </div>
-          <div class="flex-none sm:border-l sm:pl-4 space-y-2">
+          <div class="w-full shrink-0 space-y-2 sm:w-64 sm:border-l sm:pl-4">
             <p class="text-xs font-medium text-muted-foreground">Filtrar gastos por fecha</p>
             <DateFilter @range-selected="handleDateRangeChange" />
             <p v-if="expenseRange" class="text-xs text-muted-foreground">
@@ -173,13 +178,13 @@ const subsYearly = computed(() =>
 
       <!-- Tabs -->
       <Tabs v-model="activeTab">
-        <TabsList class="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+        <TabsList class="grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-4">
           <TabsTrigger value="dashboard" class="text-xs sm:text-sm"> Dashboard </TabsTrigger>
           <TabsTrigger value="ingresos" class="text-xs sm:text-sm">
             Ingresos
             <span
               v-if="incomes.length > 0"
-              class="ml-1.5 inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground"
+              class="ml-1 inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold bg-secondary text-secondary-foreground sm:px-2.5 sm:text-xs"
             >
               {{ incomes.length }}
             </span>
@@ -188,7 +193,7 @@ const subsYearly = computed(() =>
             Gastos
             <span
               v-if="expenses.length > 0"
-              class="ml-1.5 inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground"
+              class="ml-1 inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold bg-secondary text-secondary-foreground sm:px-2.5 sm:text-xs"
             >
               {{ expenses.length }}
             </span>
@@ -197,7 +202,7 @@ const subsYearly = computed(() =>
             Suscripciones
             <span
               v-if="subs.length > 0"
-              class="ml-1.5 inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground"
+              class="ml-1 inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold bg-secondary text-secondary-foreground sm:px-2.5 sm:text-xs"
             >
               {{ subs.length }}
             </span>
@@ -211,7 +216,7 @@ const subsYearly = computed(() =>
           </div>
           <template v-else>
             <!-- KPIs -->
-            <div class="grid gap-4 grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:gap-4 lg:grid-cols-3">
               <KpiCard
                 title="Ingresos / mes"
                 :value="formatEUR(summary.totals.incomeMonthly)"
@@ -220,7 +225,7 @@ const subsYearly = computed(() =>
                 accent="green"
               />
               <KpiCard
-                title="Gastos / mes (presupuesto)"
+                title="Gastos / mes"
                 :value="formatEUR(summary.totals.expensesMonthly)"
                 :subtitle="`Saldo: ${formatEUR(summary.totals.balanceMonthly)}`"
                 :icon="TrendingDown"

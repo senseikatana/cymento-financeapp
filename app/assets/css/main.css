@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  /* Evita scroll horizontal accidental sin romper position: sticky */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;

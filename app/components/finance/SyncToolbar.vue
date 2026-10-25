@@ -58,10 +58,10 @@ async function handleSeed() {
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row items-center gap-2 w-full">
+  <div class="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center">
     <button
       type="button"
-      class="inline-flex items-center justify-center gap-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
+      class="inline-flex h-8 w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-3 text-xs hover:bg-accent hover:text-accent-foreground sm:w-auto"
       :disabled="exporting"
       @click="handleExport"
     >
@@ -72,7 +72,7 @@ async function handleSeed() {
 
     <button
       type="button"
-      class="inline-flex items-center justify-center gap-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
+      class="inline-flex h-8 w-full items-center justify-center gap-2 rounded-md border border-input bg-background px-3 text-xs hover:bg-accent hover:text-accent-foreground sm:w-auto"
       :disabled="importing"
       @click="fileRef?.click()"
     >
@@ -83,7 +83,7 @@ async function handleSeed() {
 
     <input ref="fileRef" type="file" accept=".xlsx,.xls" class="hidden" @change="handleFile" />
 
-    <div class="relative">
+    <div class="relative w-full sm:w-auto">
       <button
         type="button"
         class="inline-flex items-center justify-center gap-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs w-full sm:w-auto"

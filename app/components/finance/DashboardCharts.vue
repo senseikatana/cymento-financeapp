@@ -91,7 +91,7 @@ const monthProgress = computed(() => {
       <h3 class="text-sm font-semibold mb-3">Distribución mensual por bucket</h3>
       <div class="flex flex-col sm:flex-row items-center gap-4">
         <div
-          class="relative h-40 w-40 shrink-0 rounded-full"
+          class="relative h-36 w-36 shrink-0 rounded-full sm:h-40 sm:w-40"
           :style="{ background: conicGradient }"
         >
           <div class="absolute inset-4 rounded-full bg-card" />
@@ -117,7 +117,7 @@ const monthProgress = computed(() => {
       <h3 class="text-sm font-semibold mb-3">Gastos reales vs presupuesto</h3>
       <div class="space-y-4">
         <div>
-          <div class="flex justify-between mb-2">
+          <div class="mb-2 flex flex-wrap items-baseline justify-between gap-x-2">
             <span class="text-sm font-medium">Gastado este mes</span>
             <span class="text-sm font-semibold tabular-nums">
               {{ formatEUR(realMonth) }}
@@ -138,7 +138,7 @@ const monthProgress = computed(() => {
           </p>
         </div>
         <div>
-          <div class="flex justify-between mb-2">
+          <div class="mb-2 flex flex-wrap items-baseline justify-between gap-x-2">
             <span class="text-sm font-medium">Gastado este año</span>
             <span class="text-sm font-semibold tabular-nums">
               {{ formatEUR(realYear) }}
@@ -200,14 +200,18 @@ const monthProgress = computed(() => {
       </p>
       <div v-else class="space-y-2">
         <div v-for="[name, value] in catData" :key="name" class="flex items-center gap-3">
-          <span class="w-32 shrink-0 truncate text-xs text-muted-foreground">{{ name }}</span>
+          <span class="w-20 shrink-0 truncate text-xs text-muted-foreground sm:w-32">{{
+            name
+          }}</span>
           <div class="h-4 flex-1 rounded bg-muted overflow-hidden">
             <div
               class="h-full rounded bg-violet-500"
               :style="{ width: `${catMax > 0 ? (value / catMax) * 100 : 0}%` }"
             />
           </div>
-          <span class="w-20 shrink-0 text-right text-xs tabular-nums">{{ formatEUR(value) }}</span>
+          <span class="w-16 shrink-0 text-right text-xs tabular-nums sm:w-20">{{
+            formatEUR(value)
+          }}</span>
         </div>
       </div>
     </div>

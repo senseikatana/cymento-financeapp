@@ -52,7 +52,7 @@ const progressWidth = computed(() => Math.max(0, Math.min(100, props.progress ??
   <div
     :class="
       cn(
-        'relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm ring-1',
+        'relative min-w-0 overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm ring-1',
         a.ring
       )
     "
@@ -60,10 +60,14 @@ const progressWidth = computed(() => Math.max(0, Math.min(100, props.progress ??
     <div class="p-4 sm:p-5">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide truncate">
+          <p
+            class="text-xs font-medium uppercase leading-tight tracking-wide text-muted-foreground"
+          >
             {{ title }}
           </p>
-          <p class="mt-1 text-2xl font-bold tabular-nums sm:text-2xl">
+          <p
+            class="mt-1 break-words text-lg font-bold tabular-nums min-[380px]:text-xl sm:text-2xl"
+          >
             {{ value }}
           </p>
           <p v-if="subtitle" class="mt-1 text-xs text-muted-foreground">

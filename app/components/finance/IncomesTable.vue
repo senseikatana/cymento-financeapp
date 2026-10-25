@@ -58,14 +58,18 @@ async function confirm() {
                 <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Fuente
                 </th>
-                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
+                <th
+                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground hidden md:table-cell"
+                >
                   Tipo
                 </th>
-                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
+                <th
+                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground hidden md:table-cell"
+                >
                   Frec.
                 </th>
                 <th
-                  class="h-10 px-2 text-right align-middle font-medium text-muted-foreground tabular-nums"
+                  class="h-10 px-2 text-right align-middle font-medium text-muted-foreground tabular-nums hidden lg:table-cell"
                 >
                   Mensual
                 </th>
@@ -77,7 +81,9 @@ async function confirm() {
                 <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
                   Fecha
                 </th>
-                <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
+                <th
+                  class="h-10 px-2 text-left align-middle font-medium text-muted-foreground hidden sm:table-cell"
+                >
                   Estado
                 </th>
                 <th
@@ -90,7 +96,7 @@ async function confirm() {
             <tbody class="[&_tr:last-child]:border-0">
               <tr v-for="row in items" :key="row.id" class="border-b">
                 <td class="p-2 align-middle">
-                  <div class="min-w-0">
+                  <div class="min-w-0 max-w-[10rem] sm:max-w-none">
                     <p class="font-medium truncate">
                       {{ row.source }}
                     </p>
@@ -99,19 +105,19 @@ async function confirm() {
                     </p>
                   </div>
                 </td>
-                <td class="p-2 align-middle">
+                <td class="p-2 align-middle hidden md:table-cell">
                   <span
                     class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold"
                   >
                     {{ INCOME_TYPE_LABELS[row.type] || row.type }}
                   </span>
                 </td>
-                <td class="p-2 align-middle">
+                <td class="p-2 align-middle hidden md:table-cell">
                   <span class="text-xs">{{
                     FREQUENCY_LABELS[row.frequency] || row.frequency
                   }}</span>
                 </td>
-                <td class="p-2 align-middle text-right tabular-nums">
+                <td class="p-2 align-middle text-right tabular-nums hidden lg:table-cell">
                   {{ formatEUR(toMonthly(row.amount, row.frequency)) }}
                 </td>
                 <td class="p-2 align-middle text-right font-medium tabular-nums">
@@ -120,7 +126,7 @@ async function confirm() {
                 <td class="p-2 align-middle">
                   <span class="text-xs text-muted-foreground">{{ formatDate(row.date) }}</span>
                 </td>
-                <td class="p-2 align-middle">
+                <td class="p-2 align-middle hidden sm:table-cell">
                   <span
                     class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold"
                     :class="
@@ -170,10 +176,10 @@ async function confirm() {
 
     <!-- Confirmación de borrado -->
     <Teleport to="body">
-      <div v-if="toDelete" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div v-if="toDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="fixed inset-0 bg-black/50" @click="toDelete = null" />
         <div
-          class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg"
+          class="relative z-50 grid max-h-[90vh] w-full max-w-lg gap-4 overflow-y-auto rounded-lg border bg-background p-4 shadow-lg sm:p-6"
         >
           <div class="flex flex-col space-y-2">
             <h2 class="text-lg font-semibold">¿Eliminar ingreso?</h2>

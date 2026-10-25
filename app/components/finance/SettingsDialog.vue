@@ -62,10 +62,10 @@ async function handleSubmit() {
 
 <template>
   <Teleport to="body">
-    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
+    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="fixed inset-0 bg-black/50" @click="emit('update:modelValue', false)" />
       <div
-        class="relative z-50 w-full max-w-lg grid gap-4 border bg-background p-6 shadow-lg rounded-lg sm:max-w-lg"
+        class="relative z-50 grid max-h-[90vh] w-full max-w-lg gap-4 overflow-y-auto rounded-lg border bg-background p-4 shadow-lg sm:max-w-lg sm:p-6"
       >
         <button
           type="button"
@@ -112,7 +112,7 @@ async function handleSubmit() {
             {{ isValid ? '✓' : '(debe sumar 100%)' }}
           </div>
 
-          <div class="grid grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div class="space-y-1.5">
               <label for="set-fixed" class="text-sm font-medium">Fijos %</label>
               <Input

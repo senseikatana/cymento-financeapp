@@ -65,15 +65,15 @@ function baseLabel(base: string) {
     </div>
     <div class="p-6 pt-0 space-y-4">
       <div v-for="it in items" :key="it.key" class="space-y-1.5">
-        <div class="flex items-center justify-between text-sm">
-          <div class="flex items-center gap-2">
+        <div class="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex min-w-0 items-center gap-2">
             <div
               class="rounded-md p-1.5"
               :style="{ backgroundColor: `${it.color}20`, color: it.color }"
             >
               <component :is="it.icon" class="h-4 w-4" />
             </div>
-            <div>
+            <div class="min-w-0">
               <p class="font-medium">
                 {{ it.label }}
               </p>
@@ -82,7 +82,7 @@ function baseLabel(base: string) {
               </p>
             </div>
           </div>
-          <div class="text-right tabular-nums">
+          <div class="shrink-0 tabular-nums sm:text-right">
             <p class="font-semibold">{{ formatEUR(it.real) }}/mes</p>
             <p class="text-xs text-muted-foreground">objetivo {{ formatEUR(it.target) }}</p>
           </div>
