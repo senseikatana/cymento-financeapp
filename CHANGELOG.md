@@ -7,6 +7,99 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.2] - 2026-10-25
+
+Highlights: feat: update components, api, and utils to new version and fix: update ui components to conform to new design standards.
+
+- 🚀 feat: update components, api, and utils to new version `632a4b4`
+  - `.env.example`
+  - `.gitignore`
+  - `.prettierignore`
+  - `.prettierrc`
+  - `.vscode/extensions.json`
+  - `.vscode/settings.json`
+  - `Caddyfile`
+  - `README.md`
+  - `app/components/DateFilter.vue`
+  - `app/components/ThemeToggle.vue`
+  - `app/components/Toaster.vue`
+  - `app/components/finance/DashboardCharts.vue`
+  - `app/components/finance/ExpenseFormDialog.vue`
+  - `app/components/finance/ExpensesTable.vue`
+  - `app/components/finance/IncomeFormDialog.vue`
+  - `app/components/finance/IncomesTable.vue`
+  - `app/components/finance/KpiCard.vue`
+  - `app/components/finance/RuleBreakdownCard.vue`
+  - `app/components/finance/SettingsDialog.vue`
+  - `app/components/finance/SubscriptionFormDialog.vue`
+  - `app/components/finance/SubscriptionsTable.vue`
+  - `app/components/finance/SyncToolbar.vue`
+  - `app/components/ui/Badge.vue`
+  - `app/components/ui/Button.vue`
+  - `app/components/ui/Card.vue`
+  - `app/components/ui/CardContent.vue`
+  - `app/components/ui/CardDescription.vue`
+  - `app/components/ui/CardFooter.vue`
+  - `app/components/ui/CardHeader.vue`
+  - `app/components/ui/CardTitle.vue`
+  - `app/components/ui/Checkbox.vue`
+  - `app/components/ui/Input.vue`
+  - `app/components/ui/Label.vue`
+  - `app/components/ui/Progress.vue`
+  - `app/components/ui/Select.vue`
+  - `app/components/ui/Switch.vue`
+  - `app/components/ui/Table.vue`
+  - `app/components/ui/TableBody.vue`
+  - `app/components/ui/TableCell.vue`
+  - `app/components/ui/TableHead.vue`
+  - `app/components/ui/TableHeader.vue`
+  - `app/components/ui/TableRow.vue`
+  - `app/components/ui/Tabs.vue`
+  - `app/components/ui/TabsContent.vue`
+  - `app/components/ui/TabsList.vue`
+  - `app/components/ui/TabsTrigger.vue`
+  - `app/components/ui/Textarea.vue`
+  - `app/composables/useFinances.ts`
+  - `app/composables/useTabs.ts`
+  - `app/composables/useTheme.ts`
+  - `app/composables/useToast.ts`
+  - `app/pages/index.vue`
+  - `app/utils/cn.ts`
+  - `app/utils/format.ts`
+  - `bun.lock`
+  - `db/custom.db`
+  - `eslint.config.js`
+  - `eslint.config.mjs`
+  - `migrations/20261025144856_init-finance-schema.sql`
+  - `migrations/20261025150155_harden-finance-schema.sql`
+  - `nuxt.config.ts`
+  - `package.json`
+  - `server/api/expenses/[id].ts`
+  - `server/api/expenses/index.ts`
+  - `server/api/expenses/monthly.ts`
+  - `server/api/expenses/real.ts`
+  - `server/api/incomes/[id].ts`
+  - `server/api/incomes/index.ts`
+  - `server/api/index.ts`
+  - `server/api/seed.ts`
+  - `server/api/settings.ts`
+  - `server/api/subscriptions/[id].ts`
+  - `server/api/subscriptions/index.ts`
+  - `server/api/summary.ts`
+  - `server/api/sync.ts`
+  - `server/utils/db.ts`
+  - `server/utils/insforge.ts`
+  - `server/utils/mappers.ts`
+  - `tailwind.config.ts`
+  - `tsconfig.json`
+- 🐛 fix: update ui components to conform to new design standards `c9b635b`
+  - `.zcode/plans/plan-session_50ce4f0e5f7d2d3872eab337737e33ef.md`
+  - `package.json`
+- 🐛 fix: update .gitignore to include new file patterns and remove outdated one `ad052af`
+- 🐛 fix: update files and directories according to the new .gitignore rules `7a46eb5`
+- 📝 docs(AGENTS.md): update 🏗️ Arquitectura Propuesta: Nuxt + Supabase, 📊 Esquema de Base de Datos and 🔄 Sincronización con Google Sheets y Excel sections `aa21fb5`
+- 🔹 ]7;file://localhost/home/senseikatana/Proyectos/cymento-financeappbun add v1.4.3 (c6da4a4d3) [nuxt:tailwindcss] ℹ Using default Tailwind CSS file ◆ Types generated in .nuxt. `ca052e9`
+
 ## [0.3.1] - 2026-10-24
 
 Highlights: fix: update .gitignore to include new file patterns and remove outdated one.
