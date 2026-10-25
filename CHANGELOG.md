@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - 2026-10-25
+
+Maintenance release with 1 change.
+
+- 🧹 chore: remove Prisma and update docs for InsForge backend `6fc27b8`
+  - `.vscode/settings.json`
+  - `README.md`
+  - `app/pages/index.vue`
+  - `bun.lock`
+  - `docs/README.md`
+  - `docs/exports/test-export-generic.xlsx`
+  - `docs/screenshots/dashboard-dark.png`
+  - `docs/screenshots/dashboard-full.png`
+  - `docs/screenshots/dashboard-generic.png`
+  - `docs/screenshots/dashboard-mobile.png`
+  - `docs/screenshots/dashboard-no-scenarios.png`
+  - `docs/screenshots/dashboard-seed.png`
+  - `package.json`
+- 🐛 fix: update CSS and Vue components for financial dashboard `88fb5be`
+- 🚀 feat: update components, api, and utils to new version `632a4b4`
+- 🐛 fix: update ui components to conform to new design standards `c9b635b`
+- 🐛 fix: update .gitignore to include new file patterns and remove outdated one `ad052af`
+- 🐛 fix: update files and directories according to the new .gitignore rules `7a46eb5`
+
 ## [0.4.0] - 2026-10-25
 
 Highlights: fix: update CSS and Vue components for financial dashboard.
