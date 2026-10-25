@@ -439,10 +439,9 @@ const subsYearly = computed(() =>
       <div
         class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-xs text-muted-foreground flex flex-col sm:flex-row justify-between gap-2"
       >
-        <p>Hecho con Nuxt · Prisma · Tailwind · Vue</p>
+        <p>Hecho con Nuxt · InsForge (Postgres) · Tailwind · Vue</p>
         <p>
-          Datos almacenados en SQLite local · Exportable a Excel/Google Sheets para BigLinux +
-          OnlyOffice
+          Datos en InsForge (Postgres) · Exportable a Excel/Google Sheets para BigLinux + OnlyOffice
         </p>
       </div>
     </footer>

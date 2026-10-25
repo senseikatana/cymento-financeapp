@@ -11,15 +11,11 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky install .husky",
-    "db:push": "prisma db push --accept-data-loss",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev"
+    "prepare": "husky install .husky"
   },
   "dependencies": {
     "@insforge/sdk": "^1.5.2",
     "@lucide/vue": "^1.61.0",
-    "@prisma/client": "^6.11.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "katanakit-js": "^6.8.4",
@@ -41,7 +37,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.10",
-    "prisma": "^6.11.1",
     "typescript-eslint": "^8.72.0"
   },
   "lint-staged": {
