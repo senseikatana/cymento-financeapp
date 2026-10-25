@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2026-10-25
+
+Highlights: fix: update CSS and Vue components for financial dashboard.
+
+- 🐛 fix: update CSS and Vue components for financial dashboard `88fb5be`
+  - `app/assets/css/main.css`
+  - `app/components/finance/DashboardCharts.vue`
+  - `app/components/finance/ExpenseFormDialog.vue`
+  - `app/components/finance/ExpensesTable.vue`
+  - `app/components/finance/IncomeFormDialog.vue`
+  - `app/components/finance/IncomesTable.vue`
+  - `app/components/finance/KpiCard.vue`
+  - `app/components/finance/RuleBreakdownCard.vue`
+  - `app/components/finance/SettingsDialog.vue`
+  - `app/components/finance/SubscriptionFormDialog.vue`
+  - `app/components/finance/SubscriptionsTable.vue`
+  - `app/components/finance/SyncToolbar.vue`
+  - `app/components/ui/TabsTrigger.vue`
+  - `app/pages/index.vue`
+- 🚀 feat: update components, api, and utils to new version `632a4b4`
+- 🐛 fix: update ui components to conform to new design standards `c9b635b`
+- 🐛 fix: update .gitignore to include new file patterns and remove outdated one `ad052af`
+- 🐛 fix: update files and directories according to the new .gitignore rules `7a46eb5`
+- 📝 docs(AGENTS.md): update 🏗️ Arquitectura Propuesta: Nuxt + Supabase, 📊 Esquema de Base de Datos and 🔄 Sincronización con Google Sheets y Excel sections `aa21fb5`
+
 ## [0.3.2] - 2026-10-25
 
 Highlights: feat: update components, api, and utils to new version and fix: update ui components to conform to new design standards.
